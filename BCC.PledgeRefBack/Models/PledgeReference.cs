@@ -1,10 +1,12 @@
-﻿using System;
+﻿using BCC.PledgeRefBack.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BCC.PledgeRefBack.Models
 {
+    [GeneratedController("api/PledgeRefs")]
     public class PledgeReference
     {
         public int Id { get; set; }

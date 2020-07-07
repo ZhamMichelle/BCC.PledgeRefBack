@@ -4,17 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
-using OfficeOpenXml.Core.ExcelPackage;
-using Microsoft.Office.Interop.Excel;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
-//using ExcelPackage = OfficeOpenXml.Core.ExcelPackage.ExcelPackage;
 using ExcelWorksheet = OfficeOpenXml.ExcelWorksheet;
 using BCC.PledgeRefBack.Models;
-//using ExcelWorksheet = OfficeOpenXml.Core.ExcelPackage.ExcelWorksheet;
 
 namespace BCC.PledgeRefBack.Controllers
 {

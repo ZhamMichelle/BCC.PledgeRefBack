@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using BCC.PledgeRefBack.Services;
+
 
 namespace BCC.PledgeRefBack
 {
@@ -22,16 +24,21 @@ namespace BCC.PledgeRefBack
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<PostgresContext>(options =>
             options.UseNpgsql($"{Configuration.GetConnectionString("DefaultConnection")};Password={Configuration.GetConnectionString("DefaultPassword")}")
             );
+            services.
+                AddMvc(o => o.Conventions.Add(
+                    new GenericControllerRouteConvention()
+                )).
+                ConfigureApplicationPartManager(m =>
+                    m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider()
+                ));
             services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using ExcelWorksheet = OfficeOpenXml.ExcelWorksheet;
 using BCC.PledgeRefBack.Models;
+using System.Text.Json;
 
 namespace BCC.PledgeRefBack.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UploadController : ControllerBase
     {
@@ -24,11 +25,12 @@ namespace BCC.PledgeRefBack.Controllers
             _hostingEnvironment = hostingEnvironment;
             _context = context;
         }
-        [HttpGet]
-        public string Import()
+        [HttpPost]
+        public string Import([FromBody] FullPath path)
         {
             string sWebRootFolder = _hostingEnvironment.ContentRootPath;
-            string sFileName = "C:/Users/User/Desktop/File/AktauPledge.xlsx";
+            // string sFileName = "C:/Users/User/Desktop/File/AktauPledge.xlsx";
+            string sFileName = path.fullPath;
             FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
             try
             {
@@ -60,7 +62,11 @@ namespace BCC.PledgeRefBack.Controllers
                             DetailArea = worksheet.Cells[row, 15].Value != null ? worksheet.Cells[row, 15].Value.ToString() : null,
                             MinCostPerSQM = Convert.ToInt32(worksheet.Cells[row, 16].Value),
                             MaxCostPerSQM = Convert.ToInt32(worksheet.Cells[row, 17].Value),
-                            CostDescription = worksheet.Cells[row, 18].Value != null ? worksheet.Cells[row, 18].Value.ToString() : null,
+                            Corridor = Convert.ToDecimal(worksheet.Cells[row, 18].Value),
+                            MinCostWithBargain = Convert.ToInt32(worksheet.Cells[row, 19].Value),
+                            MaxCostWithBargain = Convert.ToInt32(worksheet.Cells[row, 20].Value),
+                            BeginDate = Convert.ToDateTime(worksheet.Cells[row, 21].Value),
+                            EndDate = Convert.ToDateTime(worksheet.Cells[row, 22].Value),
                         };
                         _context.PledgeRefs.Add(data);
                         _context.SaveChanges();

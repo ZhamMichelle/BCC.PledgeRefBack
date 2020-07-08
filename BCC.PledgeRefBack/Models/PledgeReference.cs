@@ -27,6 +27,11 @@ namespace BCC.PledgeRefBack.Models
         public string DetailArea { get; set; }
         public int? MinCostPerSQM { get; set; }
         public int? MaxCostPerSQM { get; set; }
-        public string CostDescription { get; set; }
+        public decimal Corridor { get; set; }
+        public int? MinCostWithBargain { get; set; }
+        public int? MaxCostWithBargain { get; set; }
+        public System.DateTime BeginDate { get; set; }
+        public System.DateTime EndDate { get; set; }
+
     }
 }

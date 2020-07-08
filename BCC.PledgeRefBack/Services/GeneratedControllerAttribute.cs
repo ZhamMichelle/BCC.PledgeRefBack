@@ -32,9 +32,6 @@ namespace BCC.PledgeRefBack.Services
             foreach (var candidate in candidates)
             {
                 feature.Controllers.Add(
-                    typeof(IApplicationEntity).MakeGenericType(candidate).GetTypeInfo()
-                );
-                feature.Controllers.Add(
                     typeof(BaseController<>).MakeGenericType(candidate).GetTypeInfo()
                 );
                 

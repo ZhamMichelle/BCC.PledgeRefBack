@@ -32,14 +32,17 @@ namespace BCC.PledgeRefBack.Migrations
                     b.Property<string>("ApartmentLayoutCode")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("BeginDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("City")
                         .HasColumnType("text");
 
                     b.Property<int?>("CityCodeKATO")
                         .HasColumnType("integer");
 
-                    b.Property<string>("CostDescription")
-                        .HasColumnType("text");
+                    b.Property<decimal>("Corridor")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("DetailArea")
                         .HasColumnType("text");
@@ -47,10 +50,19 @@ namespace BCC.PledgeRefBack.Migrations
                     b.Property<string>("DetailAreaCode")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int?>("MaxCostPerSQM")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("MaxCostWithBargain")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("MinCostPerSQM")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MinCostWithBargain")
                         .HasColumnType("integer");
 
                     b.Property<string>("RelativityLocation")

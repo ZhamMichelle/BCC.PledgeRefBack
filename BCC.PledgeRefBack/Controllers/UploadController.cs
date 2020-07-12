@@ -11,6 +11,7 @@ using System.IO;
 using ExcelWorksheet = OfficeOpenXml.ExcelWorksheet;
 using BCC.PledgeRefBack.Models;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace BCC.PledgeRefBack.Controllers
 {
@@ -20,33 +21,38 @@ namespace BCC.PledgeRefBack.Controllers
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly PostgresContext _context;
-        public UploadController(IHostingEnvironment hostingEnvironment, PostgresContext context)
+        private readonly ILogger<UploadController> _logger;
+        public UploadController(IHostingEnvironment hostingEnvironment, PostgresContext context, ILogger<UploadController> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;
+            _logger = logger;
         }
         [HttpPost]
-        public string Import([FromBody] FullPath path)
+       // public string Import([FromBody] FullPath path)
+            public string Import([FromForm]IFormFile body)
         {
-            string sWebRootFolder = _hostingEnvironment.ContentRootPath;
-            // string sFileName = "C:/Users/User/Desktop/File/AktauPledge.xlsx";
-            string sFileName = path.fullPath;
-            FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+            var stream = body.OpenReadStream();
+            //string sWebRootFolder = _hostingEnvironment.ContentRootPath;
+            //string sFileName = "C:/Users/User/Desktop/File/AktauPledge.xlsx";
+            //string sFileName = path.fullPath;
+            //FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
+
             try
             {
-                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage(file))
+                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage(stream))
                 {
                     StringBuilder sb = new StringBuilder();
                     ExcelWorksheet worksheet = package.Workbook.Worksheets["Лист1"];
                     int rowCount = worksheet.Dimension.Rows;
                     int ColCount = worksheet.Dimension.Columns;
-                   
+
                     for (int row = 1; row <= rowCount; row++)
                     {
                         var data = new PledgeReference
                         {
                             CityCodeKATO = Convert.ToInt32(worksheet.Cells[row, 1].Value),
-                            City = worksheet.Cells[row, 2].Value!=null ? worksheet.Cells[row, 2].Value.ToString() : null,
+                            City = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
                             SectorCode = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,
                             Sector = Convert.ToInt32(worksheet.Cells[row, 4].Value),
                             RelativityLocation = worksheet.Cells[row, 5].Value != null ? worksheet.Cells[row, 5].Value.ToString() : null,
@@ -76,7 +82,7 @@ namespace BCC.PledgeRefBack.Controllers
             }
             catch (Exception ex)
             {
-                return "Some error occured while importing." + ex.Message;
+                return ex.Message;
             }
         }
 

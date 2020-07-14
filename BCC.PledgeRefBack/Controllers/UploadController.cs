@@ -29,14 +29,9 @@ namespace BCC.PledgeRefBack.Controllers
             _logger = logger;
         }
         [HttpPost]
-       // public string Import([FromBody] FullPath path)
             public string Import([FromForm]IFormFile body)
         {
             var stream = body.OpenReadStream();
-            //string sWebRootFolder = _hostingEnvironment.ContentRootPath;
-            //string sFileName = "C:/Users/User/Desktop/File/AktauPledge.xlsx";
-            //string sFileName = path.fullPath;
-            //FileInfo file = new FileInfo(Path.Combine(sWebRootFolder, sFileName));
 
             try
             {
@@ -82,7 +77,7 @@ namespace BCC.PledgeRefBack.Controllers
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return "Error";
             }
         }
 

@@ -30,8 +30,8 @@ namespace BCC.PledgeRefBack.Models
         public decimal Corridor { get; set; }
         public int? MinCostWithBargain { get; set; }
         public int? MaxCostWithBargain { get; set; }
-        public System.DateTime BeginDate { get; set; }
-        public System.DateTime EndDate { get; set; }
+        public DateTime? BeginDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }

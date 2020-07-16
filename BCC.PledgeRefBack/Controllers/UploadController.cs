@@ -46,7 +46,7 @@ namespace BCC.PledgeRefBack.Controllers
                     {
                         var data = new PledgeReference
                         {
-                            CityCodeKATO = Convert.ToInt32(worksheet.Cells[row, 1].Value),
+                            CityCodeKATO = worksheet.Cells[row, 1].Value != null ? worksheet.Cells[row, 1].Value.ToString() : null,
                             City = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
                             SectorCode = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,
                             Sector = Convert.ToInt32(worksheet.Cells[row, 4].Value),

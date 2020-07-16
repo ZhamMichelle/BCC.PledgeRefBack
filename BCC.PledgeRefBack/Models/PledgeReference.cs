@@ -10,7 +10,7 @@ namespace BCC.PledgeRefBack.Models
     public class PledgeReference
     {
         public int Id { get; set; }
-        public int? CityCodeKATO { get; set; }
+        public string CityCodeKATO { get; set; }
         public string City { get; set; }
         public string SectorCode { get; set; }
         public int? Sector { get; set; }

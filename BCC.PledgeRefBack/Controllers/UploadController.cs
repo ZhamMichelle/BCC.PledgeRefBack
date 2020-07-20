@@ -66,8 +66,8 @@ namespace BCC.PledgeRefBack.Controllers
                             Corridor = Convert.ToDecimal(worksheet.Cells[row, 18].Value),
                             MinCostWithBargain = Convert.ToInt32(worksheet.Cells[row, 19].Value),
                             MaxCostWithBargain = Convert.ToInt32(worksheet.Cells[row, 20].Value),
-                            BeginDate = Convert.ToDateTime(worksheet.Cells[row, 21].Value),
-                            EndDate = Convert.ToDateTime(worksheet.Cells[row, 22].Value),
+                            BeginDate = worksheet.Cells[row, 21].Value!=null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value) : (DateTime?)null,
+                            EndDate = worksheet.Cells[row, 22].Value!=null ? Convert.ToDateTime(worksheet.Cells[row, 22].Value) : (DateTime?)null
                         };
                         _context.PledgeRefs.Add(data);
                         _context.SaveChanges();

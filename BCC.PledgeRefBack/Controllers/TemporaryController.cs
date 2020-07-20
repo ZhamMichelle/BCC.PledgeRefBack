@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BCC.PledgeRefBack.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BCC.PledgeRefBack.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class TemporaryController : ControllerBase
@@ -121,7 +123,10 @@ namespace BCC.PledgeRefBack.Controllers
                 result.MaxCostWithBargain = putParam.MaxCostWithBargain;
                 result.BeginDate = putParam.BeginDate;
                 result.EndDate = putParam.EndDate;
+
+                await _context.SaveChangesAsync();
             }
+
             return Ok();
         }
     }

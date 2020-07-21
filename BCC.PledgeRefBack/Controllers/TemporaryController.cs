@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BCC.PledgeRefBack.Controllers
 {
-    [Authorize]
+    
+    //[Authorize(Policy = "UMOD")]
     [Route("[controller]")]
     [ApiController]
     public class TemporaryController : ControllerBase

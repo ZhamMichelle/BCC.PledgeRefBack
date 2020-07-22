@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BCC.PledgeRefBack.Migrations
 {
     [DbContext(typeof(PostgresContext))]
-    [Migration("20200715121119_KatoCodeToString")]
-    partial class KatoCodeToString
+    [Migration("20200722061235_CleanMigration")]
+    partial class CleanMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,90 @@ namespace BCC.PledgeRefBack.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            modelBuilder.Entity("BCC.PledgeRefBack.Models.LogData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Action")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApartmentLayout")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApartmentLayoutCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("BeginDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CityCodeKATO")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Corridor")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("DetailArea")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DetailAreaCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("MaxCostPerSQM")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxCostWithBargain")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MinCostPerSQM")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MinCostWithBargain")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RelativityLocation")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Sector")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SectorCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SectorDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeEstate")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeEstateByRef")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeEstateCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WallMaterial")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("WallMaterialCode")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PLEDGE_LogData");
+                });
 
             modelBuilder.Entity("BCC.PledgeRefBack.Models.PledgeReference", b =>
                 {
@@ -70,7 +154,7 @@ namespace BCC.PledgeRefBack.Migrations
                     b.Property<string>("RelativityLocation")
                         .HasColumnType("text");
 
-                    b.Property<int?>("Sector")
+                    b.Property<int>("Sector")
                         .HasColumnType("integer");
 
                     b.Property<string>("SectorCode")
@@ -96,7 +180,7 @@ namespace BCC.PledgeRefBack.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PledgeRefs");
+                    b.ToTable("PLEDGE_PledgeRefs");
                 });
 #pragma warning restore 612, 618
         }

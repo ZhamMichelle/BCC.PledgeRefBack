@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace BCC.PledgeRefBack.Controllers
 {
     
-    //[Authorize(Policy = "UMOD")]
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class TemporaryController : ControllerBase
@@ -30,14 +30,40 @@ namespace BCC.PledgeRefBack.Controllers
             return Ok(allList);
         }
 
-        [HttpGet("search")]
-        public async Task<ActionResult> GetBySearch(string city, int? sector) {
+        [HttpGet("search/sector")]
+        public async Task<ActionResult> GetBySearchSector(string city, int? sector)
+        {
             if (sector != null)
             {
-                var searchList = await _context.PledgeRefs.Where(r => r.City==city && r.Sector == sector).ToListAsync();
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector).ToListAsync();
                 return Ok(searchList);
             }
-            else {
+            else
+            {
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city).ToListAsync();
+                return Ok(searchList);
+            }
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult> GetBySearch(string city, int? sector, string estate)
+        {
+            if (sector != null && estate != null)
+            {
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector && r.TypeEstate.ToLower().Contains(estate.ToLower())).ToListAsync();
+                return Ok(searchList);
+            }
+            else if (sector == null && estate != null) {
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.TypeEstate.ToLower().Contains(estate.ToLower())).ToListAsync();
+                return Ok(searchList);
+            }
+            if (sector != null && estate == null)
+            {
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector).ToListAsync();
+                return Ok(searchList);
+            }
+            else
+            {
                 var searchList = await _context.PledgeRefs.Where(r => r.City == city).ToListAsync();
                 return Ok(searchList);
             }

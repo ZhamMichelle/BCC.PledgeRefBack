@@ -50,7 +50,7 @@ namespace BCC.PledgeRefBack
             services.AddTransient<IAuthorizationHandler, PolicyHandler>();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("UMOD", policy => policy.Requirements.Add(new PolicyRequirement(new List<string> { "UMOD" })));
+                options.AddPolicy("DMOD", policy => policy.Requirements.Add(new PolicyRequirement(new List<string> { "DMOD" })));
             });
 
             //services.AddControllers().AddNewtonsoftJson(options =>

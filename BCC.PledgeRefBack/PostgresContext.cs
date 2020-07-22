@@ -11,6 +11,7 @@ namespace BCC.PledgeRefBack
     {
         public PostgresContext(DbContextOptions<PostgresContext> options) : base(options) { }
         public DbSet<PledgeReference> PledgeRefs { get; set; }
+        public DbSet<LogData> LogData { get; set; }
         public PostgresContext()
         {
             // Database.EnsureCreated();
@@ -19,6 +20,13 @@ namespace BCC.PledgeRefBack
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PledgeReference>().HasKey(u => u.Id);
+
+            modelBuilder.Entity<LogData>().HasKey(u => u.Id);
+
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                entity.SetTableName($"PLEDGE_{entity.GetTableName()}");
+            }
         }
     }
 }

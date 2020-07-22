@@ -1,0 +1,1 @@
+docker build -t pledge . -f ./Bcc.Pledg/Dockerfile --build-arg HTTP_PROXY=http://shontykb:B!A@U#r4@proxy-ws.cbank.kz:8080/ --build-arg HTTPS_PROXY=http://shontykb:B!A@U#r4@proxy-ws.cbank.kz:8080

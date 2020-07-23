@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Bcc.Pledg
 {
@@ -30,10 +29,7 @@ namespace Bcc.Pledg
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddSingleton<Serilog.ILogger>(ctx =>
-                        new LoggerConfiguration().ReadFrom.Configuration(Configuration)
-                        .CreateLogger()
-                    );
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                    .AddJwtBearer(options =>
                    {

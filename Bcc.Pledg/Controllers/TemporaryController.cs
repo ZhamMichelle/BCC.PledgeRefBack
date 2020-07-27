@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Bcc.Pledg.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Bcc.Pledg.Controllers
 {
-    
+
     [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
@@ -53,7 +51,8 @@ namespace Bcc.Pledg.Controllers
                 var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector && r.TypeEstate.ToLower().Contains(estate.ToLower())).ToListAsync();
                 return Ok(searchList);
             }
-            else if (sector == null && estate != null) {
+            else if (sector == null && estate != null)
+            {
                 var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.TypeEstate.ToLower().Contains(estate.ToLower())).ToListAsync();
                 return Ok(searchList);
             }
@@ -70,19 +69,51 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> RemoveId(int id)
+        public async Task<ActionResult> RemoveId(int id, [FromQuery]string username)
         {
 
             var deleteParams = await _context.PledgeRefs.FirstOrDefaultAsync(r => r.Id == id);
             if (deleteParams == null)
                 return NotFound();
             _context.PledgeRefs.Remove(deleteParams);
+
+            var logdata = _context.LogData.Add(new LogData()
+            {
+                CityCodeKATO = deleteParams.CityCodeKATO,
+                City = deleteParams.City,
+                SectorCode = deleteParams.SectorCode,
+                Sector = deleteParams.Sector,
+                RelativityLocation = deleteParams.RelativityLocation,
+                SectorDescription = deleteParams.SectorDescription,
+                TypeEstateCode = deleteParams.TypeEstateCode,
+                TypeEstateByRef = deleteParams.TypeEstateByRef,
+                TypeEstate = deleteParams.TypeEstate,
+                ApartmentLayoutCode = deleteParams.ApartmentLayoutCode,
+                ApartmentLayout = deleteParams.ApartmentLayout,
+                WallMaterialCode = deleteParams.WallMaterialCode,
+                WallMaterial = deleteParams.WallMaterial,
+                DetailAreaCode = deleteParams.DetailAreaCode,
+                DetailArea = deleteParams.DetailArea,
+                MinCostPerSQM = deleteParams.MinCostPerSQM,
+                MaxCostPerSQM = deleteParams.MaxCostPerSQM,
+                Corridor = deleteParams.Corridor,
+                MinCostWithBargain = deleteParams.MinCostWithBargain,
+                MaxCostWithBargain = deleteParams.MaxCostWithBargain,
+                BeginDate = deleteParams.BeginDate,
+                EndDate = deleteParams.EndDate,
+                Action = "Удаление",
+                Username = username,
+                PreviousId = id,
+                ChangeDate = DateTime.Today,
+            });
+
             await _context.SaveChangesAsync();
             return Ok("Removed");
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetId(int id) {
+        public async Task<ActionResult> GetId(int id)
+        {
             var getElement = await _context.PledgeRefs.FirstOrDefaultAsync(r => r.Id == id);
             if (getElement == null)
                 return NotFound();
@@ -90,67 +121,83 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddElement([FromBody] PledgeReference element)
+        public async Task<ActionResult> AddElement([FromBody]PledgeReference analysis, [FromQuery]string username)
         {
-            var postParam = new PledgeReference
-            {
-                CityCodeKATO = element.CityCodeKATO,
-                City = element.City,
-                SectorCode = element.SectorCode,
-                Sector = element.Sector,
-                RelativityLocation = element.RelativityLocation,
-                SectorDescription = element.SectorDescription,
-                TypeEstateCode = element.TypeEstateCode,
-                TypeEstateByRef = element.TypeEstateByRef,
-                TypeEstate = element.TypeEstate,
-                ApartmentLayoutCode = element.ApartmentLayoutCode,
-                ApartmentLayout = element.ApartmentLayout,
-                WallMaterialCode = element.WallMaterialCode,
-                WallMaterial = element.WallMaterial,
-                DetailAreaCode = element.DetailAreaCode,
-                DetailArea = element.DetailArea,
-                MinCostPerSQM = element.MinCostPerSQM,
-                MaxCostPerSQM = element.MaxCostPerSQM,
-                Corridor = element.Corridor,
-                MinCostWithBargain = element.MinCostWithBargain,
-                MaxCostWithBargain = element.MaxCostWithBargain,
-                BeginDate = element.BeginDate,
-                EndDate = element.EndDate,
-            };
+            _context.PledgeRefs.Add(analysis);
 
-            _context.PledgeRefs.Add(postParam);
+            var logdata = _context.LogData.Add(new LogData()
+            {
+                CityCodeKATO = analysis.CityCodeKATO,
+                City = analysis.City,
+                SectorCode = analysis.SectorCode,
+                Sector = analysis.Sector,
+                RelativityLocation = analysis.RelativityLocation,
+                SectorDescription = analysis.SectorDescription,
+                TypeEstateCode = analysis.TypeEstateCode,
+                TypeEstateByRef = analysis.TypeEstateByRef,
+                TypeEstate = analysis.TypeEstate,
+                ApartmentLayoutCode = analysis.ApartmentLayoutCode,
+                ApartmentLayout = analysis.ApartmentLayout,
+                WallMaterialCode = analysis.WallMaterialCode,
+                WallMaterial = analysis.WallMaterial,
+                DetailAreaCode = analysis.DetailAreaCode,
+                DetailArea = analysis.DetailArea,
+                MinCostPerSQM = analysis.MinCostPerSQM,
+                MaxCostPerSQM = analysis.MaxCostPerSQM,
+                Corridor = analysis.Corridor,
+                MinCostWithBargain = analysis.MinCostWithBargain,
+                MaxCostWithBargain = analysis.MaxCostWithBargain,
+                BeginDate = analysis.BeginDate,
+                EndDate = analysis.EndDate,
+                Action = "Добавление",
+                Username = username,
+                PreviousId = _context.PledgeRefs.FirstOrDefault(p => p.Id == _context.PledgeRefs.Max(x => x.Id)).Id + 1,
+                ChangeDate = DateTime.Today,
+            });
+
             await _context.SaveChangesAsync();
 
             return Ok("Added");
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutElement([FromBody] PledgeReference putParam) {
-            var result = await _context.PledgeRefs.FirstOrDefaultAsync(r => r.Id == putParam.Id);
-            if (result != null) {
-                result.CityCodeKATO = putParam.CityCodeKATO;
-                result.City = putParam.City;
-                result.SectorCode = putParam.SectorCode;
-                result.Sector = putParam.Sector;
-                result.RelativityLocation = putParam.RelativityLocation;
-                result.SectorDescription = putParam.SectorDescription;
-                result.TypeEstateCode = putParam.TypeEstateCode;
-                result.TypeEstateByRef = putParam.TypeEstateByRef;
-                result.TypeEstate = putParam.TypeEstate;
-                result.ApartmentLayoutCode = putParam.ApartmentLayoutCode;
-                result.ApartmentLayout = putParam.ApartmentLayout;
-                result.WallMaterialCode = putParam.WallMaterialCode;
-                result.WallMaterial = putParam.WallMaterial;
-                result.DetailAreaCode = putParam.DetailAreaCode;
-                result.DetailArea = putParam.DetailArea;
-                result.MinCostPerSQM = putParam.MinCostPerSQM;
-                result.MaxCostPerSQM = putParam.MaxCostPerSQM;
-                result.Corridor = putParam.Corridor;
-                result.MinCostWithBargain = putParam.MinCostWithBargain;
-                result.MaxCostWithBargain = putParam.MaxCostWithBargain;
-                result.BeginDate = putParam.BeginDate;
-                result.EndDate = putParam.EndDate;
+        public async Task<ActionResult> PutElement([FromBody] PledgeReference analysis, [FromQuery]string username)
+        {
+            var result = await _context.PledgeRefs.FirstOrDefaultAsync(r => r.Id == analysis.Id);
 
+            if (result != null)
+            {
+                result = analysis;
+
+                var logdata = _context.LogData.Add(new LogData()
+                {
+                    CityCodeKATO = analysis.CityCodeKATO,
+                    City = analysis.City,
+                    SectorCode = analysis.SectorCode,
+                    Sector = analysis.Sector,
+                    RelativityLocation = analysis.RelativityLocation,
+                    SectorDescription = analysis.SectorDescription,
+                    TypeEstateCode = analysis.TypeEstateCode,
+                    TypeEstateByRef = analysis.TypeEstateByRef,
+                    TypeEstate = analysis.TypeEstate,
+                    ApartmentLayoutCode = analysis.ApartmentLayoutCode,
+                    ApartmentLayout = analysis.ApartmentLayout,
+                    WallMaterialCode = analysis.WallMaterialCode,
+                    WallMaterial = analysis.WallMaterial,
+                    DetailAreaCode = analysis.DetailAreaCode,
+                    DetailArea = analysis.DetailArea,
+                    MinCostPerSQM = analysis.MinCostPerSQM,
+                    MaxCostPerSQM = analysis.MaxCostPerSQM,
+                    Corridor = analysis.Corridor,
+                    MinCostWithBargain = analysis.MinCostWithBargain,
+                    MaxCostWithBargain = analysis.MaxCostWithBargain,
+                    BeginDate = analysis.BeginDate,
+                    EndDate = analysis.EndDate,
+                    Action = "Редактирование",
+                    Username = username,
+                    PreviousId = analysis.Id,
+                    ChangeDate = DateTime.Today,
+                });
                 await _context.SaveChangesAsync();
             }
 

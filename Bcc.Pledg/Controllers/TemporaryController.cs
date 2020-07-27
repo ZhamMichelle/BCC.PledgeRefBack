@@ -111,6 +111,51 @@ namespace Bcc.Pledg.Controllers
             return Ok("Removed");
         }
 
+        [HttpDelete("city/{city}")]
+        public async Task<ActionResult> RemoveCity(string city, [FromQuery]string username)
+        {
+
+            var deleteParams = await _context.PledgeRefs.Where(r => r.City == city).ToListAsync();
+            if (deleteParams == null)
+                return NotFound();
+            _context.PledgeRefs.RemoveRange(deleteParams);
+            foreach (var item in deleteParams)
+            {
+                var logdata = _context.LogData.Add(new LogData()
+                {
+                    CityCodeKATO = item.CityCodeKATO,
+                    City = item.City,
+                    SectorCode = item.SectorCode,
+                    Sector = item.Sector,
+                    RelativityLocation = item.RelativityLocation,
+                    SectorDescription = item.SectorDescription,
+                    TypeEstateCode = item.TypeEstateCode,
+                    TypeEstateByRef = item.TypeEstateByRef,
+                    TypeEstate = item.TypeEstate,
+                    ApartmentLayoutCode = item.ApartmentLayoutCode,
+                    ApartmentLayout = item.ApartmentLayout,
+                    WallMaterialCode = item.WallMaterialCode,
+                    WallMaterial = item.WallMaterial,
+                    DetailAreaCode = item.DetailAreaCode,
+                    DetailArea = item.DetailArea,
+                    MinCostPerSQM = item.MinCostPerSQM,
+                    MaxCostPerSQM = item.MaxCostPerSQM,
+                    Corridor = item.Corridor,
+                    MinCostWithBargain = item.MinCostWithBargain,
+                    MaxCostWithBargain = item.MaxCostWithBargain,
+                    BeginDate = item.BeginDate,
+                    EndDate = item.EndDate,
+                    Action = "Удаление",
+                    Username = username,
+                    PreviousId = item.Id,
+                    ChangeDate = DateTime.Today,
+                });
+
+                await _context.SaveChangesAsync();
+            }
+            return Ok("Removed");
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult> GetId(int id)
         {

@@ -3,15 +3,17 @@ using System;
 using Bcc.Pledg;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Bcc.Pledg.Migrations
 {
     [DbContext(typeof(PostgresContext))]
-    partial class PostgresContextModelSnapshot : ModelSnapshot
+    [Migration("20200728040655_AddBargainDeleteTypeEstate")]
+    partial class AddBargainDeleteTypeEstate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,18 +122,15 @@ namespace Bcc.Pledg.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal?>("Bargain")
-                        .IsRequired()
                         .HasColumnType("numeric");
 
                     b.Property<DateTime?>("BeginDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CityCodeKATO")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("DetailArea")
@@ -144,19 +143,15 @@ namespace Bcc.Pledg.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("MaxCostPerSQM")
-                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<int?>("MaxCostWithBargain")
-                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<int?>("MinCostPerSQM")
-                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<int?>("MinCostWithBargain")
-                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<string>("RelativityLocation")
@@ -166,19 +161,15 @@ namespace Bcc.Pledg.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("SectorCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SectorDescription")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TypeEstateByRef")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TypeEstateCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("WallMaterial")

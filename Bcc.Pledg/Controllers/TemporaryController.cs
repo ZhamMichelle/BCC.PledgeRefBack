@@ -48,15 +48,15 @@ namespace Bcc.Pledg.Controllers
         {
             if (sector != null && estate != null)
             {
-                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector && r.TypeEstate.ToLower().Contains(estate.ToLower())).ToListAsync();
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector && r.TypeEstateByRef.ToLower().Contains(estate.ToLower())).ToListAsync();
                 return Ok(searchList);
             }
             else if (sector == null && estate != null)
             {
-                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.TypeEstate.ToLower().Contains(estate.ToLower())).ToListAsync();
+                var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.TypeEstateByRef.ToLower().Contains(estate.ToLower())).ToListAsync();
                 return Ok(searchList);
             }
-            if (sector != null && estate == null)
+           else if (sector != null && estate == null)
             {
                 var searchList = await _context.PledgeRefs.Where(r => r.City == city && r.Sector == sector).ToListAsync();
                 return Ok(searchList);
@@ -87,7 +87,6 @@ namespace Bcc.Pledg.Controllers
                 SectorDescription = deleteParams.SectorDescription,
                 TypeEstateCode = deleteParams.TypeEstateCode,
                 TypeEstateByRef = deleteParams.TypeEstateByRef,
-                TypeEstate = deleteParams.TypeEstate,
                 ApartmentLayoutCode = deleteParams.ApartmentLayoutCode,
                 ApartmentLayout = deleteParams.ApartmentLayout,
                 WallMaterialCode = deleteParams.WallMaterialCode,
@@ -96,7 +95,7 @@ namespace Bcc.Pledg.Controllers
                 DetailArea = deleteParams.DetailArea,
                 MinCostPerSQM = deleteParams.MinCostPerSQM,
                 MaxCostPerSQM = deleteParams.MaxCostPerSQM,
-                Corridor = deleteParams.Corridor,
+                Bargain = deleteParams.Bargain,
                 MinCostWithBargain = deleteParams.MinCostWithBargain,
                 MaxCostWithBargain = deleteParams.MaxCostWithBargain,
                 BeginDate = deleteParams.BeginDate,
@@ -131,7 +130,6 @@ namespace Bcc.Pledg.Controllers
                     SectorDescription = item.SectorDescription,
                     TypeEstateCode = item.TypeEstateCode,
                     TypeEstateByRef = item.TypeEstateByRef,
-                    TypeEstate = item.TypeEstate,
                     ApartmentLayoutCode = item.ApartmentLayoutCode,
                     ApartmentLayout = item.ApartmentLayout,
                     WallMaterialCode = item.WallMaterialCode,
@@ -140,7 +138,7 @@ namespace Bcc.Pledg.Controllers
                     DetailArea = item.DetailArea,
                     MinCostPerSQM = item.MinCostPerSQM,
                     MaxCostPerSQM = item.MaxCostPerSQM,
-                    Corridor = item.Corridor,
+                    Bargain = item.Bargain,
                     MinCostWithBargain = item.MinCostWithBargain,
                     MaxCostWithBargain = item.MaxCostWithBargain,
                     BeginDate = item.BeginDate,
@@ -180,7 +178,6 @@ namespace Bcc.Pledg.Controllers
                 SectorDescription = analysis.SectorDescription,
                 TypeEstateCode = analysis.TypeEstateCode,
                 TypeEstateByRef = analysis.TypeEstateByRef,
-                TypeEstate = analysis.TypeEstate,
                 ApartmentLayoutCode = analysis.ApartmentLayoutCode,
                 ApartmentLayout = analysis.ApartmentLayout,
                 WallMaterialCode = analysis.WallMaterialCode,
@@ -189,7 +186,7 @@ namespace Bcc.Pledg.Controllers
                 DetailArea = analysis.DetailArea,
                 MinCostPerSQM = analysis.MinCostPerSQM,
                 MaxCostPerSQM = analysis.MaxCostPerSQM,
-                Corridor = analysis.Corridor,
+                Bargain = analysis.Bargain,
                 MinCostWithBargain = analysis.MinCostWithBargain,
                 MaxCostWithBargain = analysis.MaxCostWithBargain,
                 BeginDate = analysis.BeginDate,
@@ -224,7 +221,6 @@ namespace Bcc.Pledg.Controllers
                     SectorDescription = analysis.SectorDescription,
                     TypeEstateCode = analysis.TypeEstateCode,
                     TypeEstateByRef = analysis.TypeEstateByRef,
-                    TypeEstate = analysis.TypeEstate,
                     ApartmentLayoutCode = analysis.ApartmentLayoutCode,
                     ApartmentLayout = analysis.ApartmentLayout,
                     WallMaterialCode = analysis.WallMaterialCode,
@@ -233,7 +229,7 @@ namespace Bcc.Pledg.Controllers
                     DetailArea = analysis.DetailArea,
                     MinCostPerSQM = analysis.MinCostPerSQM,
                     MaxCostPerSQM = analysis.MaxCostPerSQM,
-                    Corridor = analysis.Corridor,
+                    Bargain = analysis.Bargain,
                     MinCostWithBargain = analysis.MinCostWithBargain,
                     MaxCostWithBargain = analysis.MaxCostWithBargain,
                     BeginDate = analysis.BeginDate,

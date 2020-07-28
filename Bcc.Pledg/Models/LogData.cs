@@ -13,7 +13,6 @@ namespace Bcc.Pledg.Models
         public string SectorDescription { get; set; }
         public string TypeEstateCode { get; set; }
         public string TypeEstateByRef { get; set; }
-        public string TypeEstate { get; set; }
         public string ApartmentLayoutCode { get; set; }
         public string ApartmentLayout { get; set; }
         public int? WallMaterialCode { get; set; }
@@ -22,7 +21,7 @@ namespace Bcc.Pledg.Models
         public string DetailArea { get; set; }
         public int? MinCostPerSQM { get; set; }
         public int? MaxCostPerSQM { get; set; }
-        public decimal Corridor { get; set; }
+        public decimal? Bargain { get; set; }
         public int? MinCostWithBargain { get; set; }
         public int? MaxCostWithBargain { get; set; }
         public DateTime? BeginDate { get; set; }

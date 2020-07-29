@@ -26,7 +26,7 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult> GetBySearch(string actionType, int? code)
+        public async Task<ActionResult> GetBySearch(string actionType, string code)
         {
 
             if (code == null)
@@ -36,12 +36,12 @@ namespace Bcc.Pledg.Controllers
             }
             else if (code != null && actionType == "Выберите действие")
             {
-                var searchList = await _context.LogData.Where(r => r.PreviousId == code).ToListAsync();
+                var searchList = await _context.LogData.Where(r => r.Code == code).ToListAsync();
                 return Ok(searchList);
             }
             else
             {
-                var searchList = await _context.LogData.Where(r => r.Action == actionType && r.PreviousId == code).ToListAsync();
+                var searchList = await _context.LogData.Where(r => r.Action == actionType && r.Code == code).ToListAsync();
                 return Ok(searchList);
             }
         }

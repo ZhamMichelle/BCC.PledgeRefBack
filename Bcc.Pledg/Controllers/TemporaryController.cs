@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Bcc.Pledg.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Bcc.Pledg.Controllers
 {
@@ -15,10 +16,12 @@ namespace Bcc.Pledg.Controllers
     public class TemporaryController : ControllerBase
     {
         private readonly PostgresContext _context;
+        private readonly ILogger<TemporaryController> _logger;
 
-        public TemporaryController(PostgresContext context)
+        public TemporaryController(PostgresContext context, ILogger<TemporaryController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet("city")]
@@ -79,6 +82,7 @@ namespace Bcc.Pledg.Controllers
 
             var logdata = _context.LogData.Add(new LogData()
             {
+                Code=deleteParams.Code,
                 CityCodeKATO = deleteParams.CityCodeKATO,
                 City = deleteParams.City,
                 SectorCode = deleteParams.SectorCode,
@@ -102,7 +106,6 @@ namespace Bcc.Pledg.Controllers
                 EndDate = deleteParams.EndDate,
                 Action = "Удаление",
                 Username = username,
-                PreviousId = id,
                 ChangeDate = DateTime.Today,
             });
 
@@ -122,6 +125,7 @@ namespace Bcc.Pledg.Controllers
             {
                 var logdata = _context.LogData.Add(new LogData()
                 {
+                    Code= item.Code,
                     CityCodeKATO = item.CityCodeKATO,
                     City = item.City,
                     SectorCode = item.SectorCode,
@@ -143,9 +147,8 @@ namespace Bcc.Pledg.Controllers
                     MaxCostWithBargain = item.MaxCostWithBargain,
                     BeginDate = item.BeginDate,
                     EndDate = item.EndDate,
-                    Action = "Удаление",
+                    Action = "Удаление по городу",
                     Username = username,
-                    PreviousId = item.Id,
                     ChangeDate = DateTime.Today,
                 });
 
@@ -170,6 +173,7 @@ namespace Bcc.Pledg.Controllers
 
             var logdata = _context.LogData.Add(new LogData()
             {
+                Code=analysis.Code,
                 CityCodeKATO = analysis.CityCodeKATO,
                 City = analysis.City,
                 SectorCode = analysis.SectorCode,
@@ -193,7 +197,6 @@ namespace Bcc.Pledg.Controllers
                 EndDate = analysis.EndDate,
                 Action = "Добавление",
                 Username = username,
-                PreviousId = _context.PledgeRefs.FirstOrDefault(p => p.Id == _context.PledgeRefs.Max(x => x.Id)).Id + 1,
                 ChangeDate = DateTime.Today,
             });
 
@@ -206,62 +209,68 @@ namespace Bcc.Pledg.Controllers
         public async Task<ActionResult> PutElement([FromBody] PledgeReference analysis, [FromQuery]string username)
         {
             var result = await _context.PledgeRefs.FirstOrDefaultAsync(r => r.Id == analysis.Id);
-
-            if (result != null)
+            try
             {
-
-                result.CityCodeKATO = analysis.CityCodeKATO;
-                result.City = analysis.City;
-                result.SectorCode = analysis.SectorCode;
-                result.Sector = analysis.Sector;
-                result.RelativityLocation = analysis.RelativityLocation;
-                result.SectorDescription = analysis.SectorDescription;
-                result.TypeEstateCode = analysis.TypeEstateCode;
-                result.TypeEstateByRef = analysis.TypeEstateByRef;
-                result.ApartmentLayoutCode = analysis.ApartmentLayoutCode;
-                result.ApartmentLayout = analysis.ApartmentLayout;
-                result.WallMaterialCode = analysis.WallMaterialCode;
-                result.WallMaterial = analysis.WallMaterial;
-                result.DetailAreaCode = analysis.DetailAreaCode;
-                result.DetailArea = analysis.DetailArea;
-                result.MinCostPerSQM = analysis.MinCostPerSQM;
-                result.MaxCostPerSQM = analysis.MaxCostPerSQM;
-                result.Bargain = analysis.Bargain;
-                result.MinCostWithBargain = analysis.MinCostWithBargain;
-                result.MaxCostWithBargain = analysis.MaxCostWithBargain;
-                result.BeginDate = analysis.BeginDate;
-                result.EndDate = analysis.EndDate;
-                
-
-                var logdata = _context.LogData.Add(new LogData()
+                if (result != null)
                 {
-                    CityCodeKATO = analysis.CityCodeKATO,
-                    City = analysis.City,
-                    SectorCode = analysis.SectorCode,
-                    Sector = analysis.Sector,
-                    RelativityLocation = analysis.RelativityLocation,
-                    SectorDescription = analysis.SectorDescription,
-                    TypeEstateCode = analysis.TypeEstateCode,
-                    TypeEstateByRef = analysis.TypeEstateByRef,
-                    ApartmentLayoutCode = analysis.ApartmentLayoutCode,
-                    ApartmentLayout = analysis.ApartmentLayout,
-                    WallMaterialCode = analysis.WallMaterialCode,
-                    WallMaterial = analysis.WallMaterial,
-                    DetailAreaCode = analysis.DetailAreaCode,
-                    DetailArea = analysis.DetailArea,
-                    MinCostPerSQM = analysis.MinCostPerSQM,
-                    MaxCostPerSQM = analysis.MaxCostPerSQM,
-                    Bargain = analysis.Bargain,
-                    MinCostWithBargain = analysis.MinCostWithBargain,
-                    MaxCostWithBargain = analysis.MaxCostWithBargain,
-                    BeginDate = analysis.BeginDate,
-                    EndDate = analysis.EndDate,
-                    Action = "Редактирование",
-                    Username = username,
-                    PreviousId = analysis.Id,
-                    ChangeDate = DateTime.Today,
-                });
-                await _context.SaveChangesAsync();
+                    result.Code = analysis.Code;
+                    result.CityCodeKATO = analysis.CityCodeKATO;
+                    result.City = analysis.City;
+                    result.SectorCode = analysis.SectorCode;
+                    result.Sector = analysis.Sector;
+                    result.RelativityLocation = analysis.RelativityLocation;
+                    result.SectorDescription = analysis.SectorDescription;
+                    result.TypeEstateCode = analysis.TypeEstateCode;
+                    result.TypeEstateByRef = analysis.TypeEstateByRef;
+                    result.ApartmentLayoutCode = analysis.ApartmentLayoutCode;
+                    result.ApartmentLayout = analysis.ApartmentLayout;
+                    result.WallMaterialCode = analysis.WallMaterialCode;
+                    result.WallMaterial = analysis.WallMaterial;
+                    result.DetailAreaCode = analysis.DetailAreaCode;
+                    result.DetailArea = analysis.DetailArea;
+                    result.MinCostPerSQM = analysis.MinCostPerSQM;
+                    result.MaxCostPerSQM = analysis.MaxCostPerSQM;
+                    result.Bargain = analysis.Bargain;
+                    result.MinCostWithBargain = analysis.MinCostWithBargain;
+                    result.MaxCostWithBargain = analysis.MaxCostWithBargain;
+                    result.BeginDate = analysis.BeginDate;
+                    result.EndDate = analysis.EndDate;
+
+
+                    var logdata = _context.Add(new LogData()
+                    {
+                        Code = analysis.Code,
+                        CityCodeKATO = analysis.CityCodeKATO,
+                        City = analysis.City,
+                        SectorCode = analysis.SectorCode,
+                        Sector = analysis.Sector,
+                        RelativityLocation = analysis.RelativityLocation,
+                        SectorDescription = analysis.SectorDescription,
+                        TypeEstateCode = analysis.TypeEstateCode,
+                        TypeEstateByRef = analysis.TypeEstateByRef,
+                        ApartmentLayoutCode = analysis.ApartmentLayoutCode,
+                        ApartmentLayout = analysis.ApartmentLayout,
+                        WallMaterialCode = analysis.WallMaterialCode,
+                        WallMaterial = analysis.WallMaterial,
+                        DetailAreaCode = analysis.DetailAreaCode,
+                        DetailArea = analysis.DetailArea,
+                        MinCostPerSQM = analysis.MinCostPerSQM,
+                        MaxCostPerSQM = analysis.MaxCostPerSQM,
+                        Bargain = analysis.Bargain,
+                        MinCostWithBargain = analysis.MinCostWithBargain,
+                        MaxCostWithBargain = analysis.MaxCostWithBargain,
+                        BeginDate = analysis.BeginDate,
+                        EndDate = analysis.EndDate,
+                        Action = "Редактирование",
+                        Username = username,
+                        ChangeDate = DateTime.Today,
+                    });
+                    
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception e) {
+                _logger.LogError("Error", e);
             }
 
             return Ok();

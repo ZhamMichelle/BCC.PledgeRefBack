@@ -20,14 +20,23 @@ namespace Bcc.Pledg
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PledgeReference>().HasKey(u => u.Id);
+
+            modelBuilder.Entity<PledgeReference>()
+                .Property(bc => bc.Code).IsRequired();
+            modelBuilder.Entity<PledgeReference>().HasIndex(u => u.Code).IsUnique();
+
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.City).IsRequired();
+            modelBuilder.Entity<PledgeReference>()
+                .HasIndex(bc => bc.City);
 
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.CityCodeKATO).IsRequired();
 
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.Sector).IsRequired();
+            modelBuilder.Entity<PledgeReference>()
+                .HasIndex(bc => bc.Sector);
 
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.SectorCode).IsRequired();
@@ -37,6 +46,8 @@ namespace Bcc.Pledg
 
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.TypeEstateByRef).IsRequired();
+            modelBuilder.Entity<PledgeReference>()
+                .HasIndex(bc => bc.TypeEstateByRef);
 
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.TypeEstateCode).IsRequired();
@@ -56,8 +67,9 @@ namespace Bcc.Pledg
             modelBuilder.Entity<PledgeReference>()
                 .Property(bc => bc.Bargain).IsRequired();
 
-
             modelBuilder.Entity<LogData>().HasKey(u => u.Id);
+
+            modelBuilder.Entity<LogData>().HasIndex(u => u.Code);
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {

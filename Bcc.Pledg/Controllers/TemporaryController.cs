@@ -209,7 +209,29 @@ namespace Bcc.Pledg.Controllers
 
             if (result != null)
             {
-                result = analysis;
+
+                result.CityCodeKATO = analysis.CityCodeKATO;
+                result.City = analysis.City;
+                result.SectorCode = analysis.SectorCode;
+                result.Sector = analysis.Sector;
+                result.RelativityLocation = analysis.RelativityLocation;
+                result.SectorDescription = analysis.SectorDescription;
+                result.TypeEstateCode = analysis.TypeEstateCode;
+                result.TypeEstateByRef = analysis.TypeEstateByRef;
+                result.ApartmentLayoutCode = analysis.ApartmentLayoutCode;
+                result.ApartmentLayout = analysis.ApartmentLayout;
+                result.WallMaterialCode = analysis.WallMaterialCode;
+                result.WallMaterial = analysis.WallMaterial;
+                result.DetailAreaCode = analysis.DetailAreaCode;
+                result.DetailArea = analysis.DetailArea;
+                result.MinCostPerSQM = analysis.MinCostPerSQM;
+                result.MaxCostPerSQM = analysis.MaxCostPerSQM;
+                result.Bargain = analysis.Bargain;
+                result.MinCostWithBargain = analysis.MinCostWithBargain;
+                result.MaxCostWithBargain = analysis.MaxCostWithBargain;
+                result.BeginDate = analysis.BeginDate;
+                result.EndDate = analysis.EndDate;
+                
 
                 var logdata = _context.LogData.Add(new LogData()
                 {

@@ -66,10 +66,28 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("{page}/{size}")]
-        public async Task<ActionResult<PagedResult<LogData>>> GetData(int page, int size,  char? status)
+        public async Task<ActionResult<PagedResult<LogData>>> GetData(int page, int size, char? status, string code)
         {
+            if (status != null && code == null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status == null && code != null)
+            {
+                var result = await _context.LogData.Where(r => r.Code == code).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else {
                 var result = await _context.LogData.GetPagedAsync(page, size);
                 return Ok(result);
+            }
+            
         }
 
         [HttpGet("download")]

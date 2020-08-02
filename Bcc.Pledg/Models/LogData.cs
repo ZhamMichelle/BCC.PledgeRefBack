@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Bcc.Pledg.Models
 {
@@ -30,6 +31,6 @@ namespace Bcc.Pledg.Models
         public string Action { get; set; }
         public string Username { get; set; }
         public DateTime ChangeDate { get; set; }
-
+        public char IsArch { get; set; }
     }
 }

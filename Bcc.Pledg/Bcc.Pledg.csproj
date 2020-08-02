@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200801081708_AddIsArch.cs" />
+    <Compile Remove="Migrations\20200801081708_AddIsArch.Designer.cs" />
+    <Compile Remove="Migrations\20200801083413_AddIsArch.cs" />
+    <Compile Remove="Migrations\20200801083413_AddIsArch.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EPPlus" Version="5.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />

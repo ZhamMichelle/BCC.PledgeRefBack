@@ -71,6 +71,10 @@ namespace Bcc.Pledg
 
             modelBuilder.Entity<LogData>().HasIndex(u => u.Code);
 
+            modelBuilder.Entity<LogData>()
+                .Property(u=>u.IsArch).IsRequired()
+                .HasDefaultValue('0');
+
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 entity.SetTableName($"PLEDGE_{entity.GetTableName()}");

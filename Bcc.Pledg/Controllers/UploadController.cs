@@ -129,14 +129,16 @@ namespace Bcc.Pledg.Controllers
                             Action = "Excel",
                             Username = username,
                             ChangeDate = DateTime.Today,
+                            IsArch='0',
                         };
 
                         if (_context.LogData.Any(r => r.Code == data.Code))
                         {
-                          var oldData =  _context.LogData.Where(f => f.Code == data.Code).ToList();
+                          var oldData =  _context.LogData.Where(f => f.Code == data.Code && f.EndDate==null).ToList();
                             foreach (var item in oldData)
                             {
                                 item.EndDate = DateTime.Now.AddDays(-1);
+                                item.IsArch='1';
                             }
                         };
 

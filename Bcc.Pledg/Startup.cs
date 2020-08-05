@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Bcc.Pledg.Models;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Bcc.Pledg
 {
@@ -58,6 +61,8 @@ namespace Bcc.Pledg
             services.AddDbContext<PostgresContext>(options =>
             options.UseNpgsql($"{Configuration.GetConnectionString("DefaultConnection")};Password={Configuration.GetConnectionString("DefaultPassword")}")
             );
+
+            
             services.
                 AddMvc(o => o.Conventions.Add(
                     new GenericControllerRouteConvention()
@@ -67,7 +72,8 @@ namespace Bcc.Pledg
                 ));
             services.AddControllers();
             services.AddHealthChecks();
-
+            services.AddHostedService<LoaderService>();
+            services.AddReference<SectorsCity>("SectorCoordinates/SectorsCity.json");
 
         }
 
@@ -88,11 +94,37 @@ namespace Bcc.Pledg
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/"), builder =>
+            {
+                builder.Use((context, next) =>
+                {
+                    return Task.Run(() =>
+                    {
+                        var body = new StringBuilder();
+                        foreach (var res in ReferenceContext.Resources)
+                        {
+                            body.Append($"<a href='/api/base/{res.Key.Name}'>/api/base/{res.Key.Name}</a><br/>");
+                            body.AppendLine();
+                        }
+                        context.Response.WriteAsync(body.ToString());
+                    });
+                });
+            });
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/");
+                //endpoints.MapHealthChecks("/");
                 endpoints.MapControllers();
             });
+        }
+    }
+
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddReference<T>(this IServiceCollection services, string jsonFileName)
+        {
+            ReferenceContext.Resources.TryAdd(typeof(T), jsonFileName);
+            return services;
         }
     }
 }

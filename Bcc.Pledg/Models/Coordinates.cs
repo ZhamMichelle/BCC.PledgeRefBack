@@ -7,6 +7,7 @@ namespace Bcc.Pledg.Models
 {
     public class Coordinates
     {
-
+        public double lat { get; set; }  //y
+        public double lng { get; set; }  //x
     }
 }

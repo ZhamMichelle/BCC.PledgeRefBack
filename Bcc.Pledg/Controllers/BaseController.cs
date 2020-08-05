@@ -18,6 +18,13 @@ namespace Bcc.Pledg.Controllers
             _context = context;
         }
 
+        [HttpGet("{reference}")]
+        public IEnumerable<object> GetJsonFile(string reference)
+        {
+            var result = ReferenceContext.GetReference(reference);
+            return result as IEnumerable<object>;
+        }
+
         [HttpGet]
         public IEnumerable<T> Get()
         {

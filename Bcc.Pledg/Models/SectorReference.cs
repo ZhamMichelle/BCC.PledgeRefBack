@@ -7,9 +7,10 @@ namespace Bcc.Pledg.Models
 {
     public class SectorReference
     {
+        public int Id { get; set; }
         public string City { get; set; }
         public string SectorCode { get; set; }
         public int Sector { get; set; }
-        public string Coordinates { get; set; }
+        public List<Coordinates> Coordinates { get; set; }
     }
 }

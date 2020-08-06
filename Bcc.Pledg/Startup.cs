@@ -73,7 +73,7 @@ namespace Bcc.Pledg
             services.AddControllers();
             services.AddHealthChecks();
             services.AddHostedService<LoaderService>();
-            services.AddReference<SectorsCity>("SectorCoordinates/SectorsCity.json");
+            services.AddReference<SectorsCity>("Resources/SectorsCity.json");
 
         }
 

@@ -7,10 +7,11 @@ using Bcc.Pledg.Models.Branch;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bcc.Pledg.Controllers
 {
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class CoordinatesController : ControllerBase
@@ -31,13 +32,12 @@ namespace Bcc.Pledg.Controllers
             return Ok(test);
         }
 
-        [HttpPost]
-        public ActionResult SearchSector([FromBody] CoordinatesXY point)
+        [HttpGet("{city}/{point}")]
+        public int SearchSector(string city, string point )
         {
-            string city = "Актобе";
-            
-           // return Ok(IsDoublePointInsidePolygon(point.lng, point.lat, city));
-            return Ok(Raw(point.lng, point.lat, city));
+
+            string[] pointArr = point.Split(" ");
+            return Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city);
         }
 
         public int IsDoublePointInsidePolygon(double lng, double lat, string city)

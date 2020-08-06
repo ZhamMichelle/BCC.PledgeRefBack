@@ -118,7 +118,7 @@ namespace Bcc.Pledg.Controllers
                     return arr[0].sectors[k].sector;
                 }
             }
-            return c;
+            return 0;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("{city}/{point}")]
-        public int SearchSector(string city, string point )
+        public string SearchSector(string city, string point )
         {
 
             string[] pointArr = point.Split(" ");
@@ -97,7 +97,7 @@ namespace Bcc.Pledg.Controllers
             return flag;
         }
 
-        public int Raw(double lng, double lat, string city) {
+        public string Raw(double lng, double lat, string city) {
             int npol, c = 0;
             var arr = _reference.Where(r => r.city == city).ToList();
             
@@ -115,10 +115,10 @@ namespace Bcc.Pledg.Controllers
                     }
                 }
                 if (c % 2 != 0) {
-                    return arr[0].sectors[k].sector;
+                    return arr[0].sectors[k].sector.ToString();
                 }
             }
-            return 0;
+            return "отсутствует";
         }
     }
 }

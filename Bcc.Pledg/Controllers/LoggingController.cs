@@ -66,21 +66,41 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("{page}/{size}")]
-        public async Task<ActionResult<PagedResult<LogData>>> GetData(int page, int size, char? status, string code)
+        public async Task<ActionResult<PagedResult<LogData>>> GetData(int page, int size, char? status, string code, string city)
         {
-            if (status != null && code == null)
+            if (status != null && code == null && city==null)
             {
                 var result = await _context.LogData.Where(r => r.IsArch == status).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status == null && code != null)
+            else if (status == null && code != null && city==null)
             {
                 var result = await _context.LogData.Where(r => r.Code == code).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status != null && code != null)
+            else if (status == null && code == null && city != null)
+            {
+                var result = await _context.LogData.Where(r => r.City == city).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null && city == null)
             {
                 var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code == null && city != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.City == city).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status== null && code != null && city != null)
+            {
+                var result = await _context.LogData.Where(r => r.Code == code && r.City == city).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null && city != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code && r.City == city).GetPagedAsync(page, size);
                 return Ok(result);
             }
             else {

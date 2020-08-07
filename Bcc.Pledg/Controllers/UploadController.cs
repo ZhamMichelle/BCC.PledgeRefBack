@@ -137,7 +137,7 @@ namespace Bcc.Pledg.Controllers
                           var oldData =  _context.LogData.Where(f => f.Code == data.Code && f.EndDate==null).ToList();
                             foreach (var item in oldData)
                             {
-                                item.EndDate = DateTime.Now.AddDays(-1);
+                                item.EndDate = worksheet.Cells[row, 21].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 20].Value).AddDays(-1) : (DateTime?)null;
                                 item.IsArch='1';
                             }
                         };

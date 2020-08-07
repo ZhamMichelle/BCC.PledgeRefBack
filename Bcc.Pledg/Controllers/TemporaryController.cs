@@ -315,7 +315,7 @@ namespace Bcc.Pledg.Controllers
                     var oldData = _context.LogData.Where(f => f.Code == analysis.Code && f.EndDate==null).ToList();
                     foreach (var item in oldData)
                     {
-                        item.EndDate = DateTime.Now.AddDays(-1);
+                        item.EndDate = analysis.BeginDate.Value.AddDays(-1);
                         item.IsArch = '1';
                     }
 

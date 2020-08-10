@@ -124,8 +124,8 @@ namespace Bcc.Pledg.Controllers
                             Bargain = Convert.ToDecimal(worksheet.Cells[row, 18].Value),
                             MinCostWithBargain = Convert.ToInt32(worksheet.Cells[row, 19].Value),
                             MaxCostWithBargain = Convert.ToInt32(worksheet.Cells[row, 20].Value),
-                            BeginDate = worksheet.Cells[row, 21].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 20].Value) : (DateTime?)null,
-                            EndDate = worksheet.Cells[row, 22].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value) : (DateTime?)null,
+                            BeginDate = worksheet.Cells[row, 21].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value) : (DateTime?)null,
+                            EndDate = worksheet.Cells[row, 22].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 22].Value) : (DateTime?)null,
                             Action = "Excel",
                             Username = username,
                             ChangeDate = DateTime.Today,
@@ -137,7 +137,7 @@ namespace Bcc.Pledg.Controllers
                           var oldData =  _context.LogData.Where(f => f.Code == data.Code && f.EndDate==null).ToList();
                             foreach (var item in oldData)
                             {
-                                item.EndDate = worksheet.Cells[row, 21].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 20].Value).AddDays(-1) : (DateTime?)null;
+                                item.EndDate = worksheet.Cells[row, 21].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value).AddDays(-1) : (DateTime?)null;
                                 item.IsArch='1';
                             }
                         };

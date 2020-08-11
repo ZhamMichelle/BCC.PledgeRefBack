@@ -174,8 +174,8 @@ namespace Bcc.Pledg.Controllers
                     worksheet.Cells[i + 2, 19].Value = logData[i].Bargain;
                     worksheet.Cells[i + 2, 20].Value = logData[i].MinCostWithBargain;
                     worksheet.Cells[i + 2, 21].Value = logData[i].MaxCostWithBargain;
-                    worksheet.Cells[i + 2, 22].Value = logData[i].BeginDate.ToString();
-                    worksheet.Cells[i + 2, 23].Value = logData[i].EndDate.ToString();
+                    worksheet.Cells[i + 2, 22].Value = logData[i].BeginDate!=null ? logData[i].BeginDate.Value.ToShortDateString() : "";
+                    worksheet.Cells[i + 2, 23].Value = logData[i].EndDate!=null ? logData[i].EndDate.Value.ToShortDateString() : "";
                     worksheet.Cells[i + 2, 24].Value = logData[i].Action;
                     worksheet.Cells[i + 2, 25].Value = logData[i].Username;
                     worksheet.Cells[i + 2, 26].Value = logData[i].ChangeDate.ToShortDateString();

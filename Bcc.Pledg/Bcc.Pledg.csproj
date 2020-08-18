@@ -36,4 +36,6 @@
     </Resource>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties resources_4test_1json__JsonSchema="https://json-stat.org/format/schema/2.0/" /></VisualStudio></ProjectExtensions>
+
 </Project>

@@ -34,12 +34,13 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("{city}/{point}")]
-        public string SearchSector(string city, string point )
+        public string[] SearchSector(string city, string point )
         {
 
             string[] pointArr = point.Split(" ");
             //return Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city);
-            return Ray();
+            //return Ray();
+            return new[] { Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city), Ray() };
         }
 
         public int IsDoublePointInsidePolygon(double lng, double lat, string city)
@@ -131,27 +132,36 @@ namespace Bcc.Pledg.Controllers
 
         public string Ray()
         {
-            var test = _testClasses.ToList();
-            double x = 3;
-            double y = 2;
+            var arr = _testClasses.Where(r => r.city.Equals("Актобе")).ToList();
+            double lng = 3;
+            double lat = 2;
 
             int npol, c = 0;
 
-            npol = test.Count();
+            for (int k = 0; k < arr[0].sectors.Count(); k++)
+            {
+                c = 0;
+                npol = arr[0].sectors[k].coordinates.Count();
 
-            for (int i = 0, j = npol - 1; i < npol; j = i++)
-            {
-                Console.WriteLine($"i= {i}; j= {j}");
-                if ((((test[i].y <= y) && (y < test[j].y)) || ((test[j].y <= y) && (y < test[i].y))) &&
-                  ((test[j].y - test[i].y) != 0) && (x > ((test[j].x - test[i].x) * (y - test[i].y) / (test[j].y - test[i].y) + test[i].x)))
+                for (int i = 0, j = npol - 1; i < npol; j = i++)
                 {
-                    Console.WriteLine($"test[{i}].y={test[i].y}; test[{j}].y={test[j].y}; test[{j}].x={test[j].x}; test[{i}].x={test[i].x}");
-                    c = ++c;
+                    if (((arr[0].sectors[k].coordinates[i].lat <= lat) && (lat < arr[0].sectors[k].coordinates[j].lat)) ||
+                             ((arr[0].sectors[k].coordinates[j].lat <= lat) && (lat < arr[0].sectors[k].coordinates[i].lat)))
+                    {
+                        if ((arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) != 0)
+                        {
+                            if (lng > ((arr[0].sectors[k].coordinates[j].lng - arr[0].sectors[k].coordinates[i].lng) * (lat - arr[0].sectors[k].coordinates[i].lat) / (arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) + arr[0].sectors[k].coordinates[i].lng))
+                            {
+                                //Console.WriteLine($"test[{i}].y={test[i].y}; test[{j}].y={test[j].y}; test[{j}].x={test[j].x}; test[{i}].x={test[i].x}");
+                                c = ++c;
+                            }
+                        }
+                    }
                 }
-            }
-            if (c % 2 != 0)
-            {
-                return "IN POLYHEDRON";
+                if (c % 2 != 0)
+                {
+                    return "IN POLYHEDRON";
+                }
             }
             return "not in";
         }

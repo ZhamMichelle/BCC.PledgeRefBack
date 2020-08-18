@@ -18,13 +18,13 @@
       }
     },
     "Bcc.Pledg": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "applicationUrl": "http://0.0.0.0:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "commandName": "Project",
+        "launchBrowser": true,
+        "launchUrl": "",
+        "applicationUrl": "http://0.0.0.0:5000",
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        }
     }
   }
 }

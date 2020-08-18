@@ -74,7 +74,7 @@ namespace Bcc.Pledg
             services.AddHealthChecks();
             services.AddHostedService<LoaderService>();
             services.AddReference<SectorsCity>("Resources/SectorsCity.json");
-
+            services.AddReference<TestClass>("Resources/Test.json");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

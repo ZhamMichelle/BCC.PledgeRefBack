@@ -18,10 +18,11 @@ namespace Bcc.Pledg.Controllers
     {
         private readonly ILogger<CoordinatesController> _logger;
         private readonly SectorsCity[] _reference;
-
+        private readonly TestClass[] _testClasses;
         public CoordinatesController(ILogger<CoordinatesController> logger)
         {
             _reference = ReferenceContext.GetReference<SectorsCity>();
+            _testClasses = ReferenceContext.GetReference<TestClass>();
             _logger = logger;
         }
 
@@ -37,7 +38,8 @@ namespace Bcc.Pledg.Controllers
         {
 
             string[] pointArr = point.Split(" ");
-            return Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city);
+            //return Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city);
+            return Ray();
         }
 
         public int IsDoublePointInsidePolygon(double lng, double lat, string city)
@@ -126,5 +128,33 @@ namespace Bcc.Pledg.Controllers
             }
             return "отсутствует";
         }
+
+        public string Ray()
+        {
+            var test = _testClasses.ToList();
+            double x = 3;
+            double y = 2;
+
+            int npol, c = 0;
+
+            npol = test.Count();
+
+            for (int i = 0, j = npol - 1; i < npol; j = i++)
+            {
+                Console.WriteLine($"i= {i}; j= {j}");
+                if ((((test[i].y <= y) && (y < test[j].y)) || ((test[j].y <= y) && (y < test[i].y))) &&
+                  ((test[j].y - test[i].y) != 0) && (x > ((test[j].x - test[i].x) * (y - test[i].y) / (test[j].y - test[i].y) + test[i].x)))
+                {
+                    Console.WriteLine($"test[{i}].y={test[i].y}; test[{j}].y={test[j].y}; test[{j}].x={test[j].x}; test[{i}].x={test[i].x}");
+                    c = ++c;
+                }
+            }
+            if (c % 2 != 0)
+            {
+                return "IN POLYHEDRON";
+            }
+            return "not in";
+        }
+
     }
 }

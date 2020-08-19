@@ -103,19 +103,20 @@ namespace Bcc.Pledg.Controllers
         public string Raw(double lng, double lat, string city) {
             int npol, c = 0;
             var arr = _reference.Where(r => r.city.Equals(city)).ToList();
-            
+            double lngTEST = 57.1887;
+            double latTEST = 50.275657;
             for (int k = 0; k < arr[0].sectors.Count(); k++)
             {
                 c = 0;
                 npol = arr[0].sectors[k].coordinates.Count();
                 for (int i = 0, j = npol - 1; i < npol; j = i++)
                 {
-                    if (((arr[0].sectors[k].coordinates[i].lat <= lat) && (lat < arr[0].sectors[k].coordinates[j].lat)) || 
-                        ((arr[0].sectors[k].coordinates[j].lat <= lat) && (lat < arr[0].sectors[k].coordinates[i].lat)))
+                    if (((arr[0].sectors[k].coordinates[i].lat <= latTEST) && (latTEST < arr[0].sectors[k].coordinates[j].lat)) || 
+                        ((arr[0].sectors[k].coordinates[j].lat <= latTEST) && (latTEST < arr[0].sectors[k].coordinates[i].lat)))
                     {
                         if ((arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) != 0)
                         {
-                            if (lng > ((arr[0].sectors[k].coordinates[j].lng - arr[0].sectors[k].coordinates[i].lng) * (lat - arr[0].sectors[k].coordinates[i].lat) / (arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) + arr[0].sectors[k].coordinates[i].lng))
+                            if (lngTEST > ((arr[0].sectors[k].coordinates[j].lng - arr[0].sectors[k].coordinates[i].lng) * (latTEST - arr[0].sectors[k].coordinates[i].lat) / (arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) + arr[0].sectors[k].coordinates[i].lng))
                                 {
                                     //Console.WriteLine($"arr[{i}].lat={arr[0].sectors[k].coordinates[i].lat}; arr[{j}].lat={arr[0].sectors[k].coordinates[j].lat}; arr[{j}].x={arr[0].sectors[k].coordinates[j].lng}; arr[{i}].x={arr[0].sectors[k].coordinates[i].lng}");
                                     c = ++c;

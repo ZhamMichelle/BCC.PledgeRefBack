@@ -9,10 +9,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
+using System.IO;
+using System.Text;
+using OfficeOpenXml;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Bcc.Pledg.Controllers
 {
-    [Authorize(Policy = "DMOD")]
+    //[Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class CoordinatesController : ControllerBase
@@ -26,7 +32,94 @@ namespace Bcc.Pledg.Controllers
             _testClasses = ReferenceContext.GetReference<TestClass>();
             _logger = logger;
         }
+        [HttpPost("{reference}")]
+        public string PostSector([FromForm]IFormFile body,  [FromQuery]string username) {
+            var stream = body.OpenReadStream();
+            try
+            {
+                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage(stream))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Лист1"];
+                    int rowCount = worksheet.Dimension.Rows;
+                    int ColCount = worksheet.Dimension.Columns;
 
+                    string json = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/Test.json");
+                    dynamic jsonObjTest = JsonConvert.DeserializeObject(json);
+
+                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    jsonObj[0]["city"] = worksheet.Cells[2, 1].Value != null ? worksheet.Cells[2, 1].Value.ToString() : null;
+
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        jsonObj[0]["sectors"][row - 2]["sectorCode"] = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null;
+                        jsonObj[0]["sectors"][row-2]["sector"] = worksheet.Cells[row,3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null;
+
+                        //jsonObj[0]["sectors"][row - 2]["coordinates"][0] = Newtonsoft.Json.JsonConvert.DeserializeObject<Coordinates>(worksheet.Cells[row, 4].Value);
+                        var jsonString = @"{""lat"":1,""lng"":2},{""lat"":3,""lng"":4}";
+                        var jsonT = "[{\"lat\":57.5,\"lng\":57.5},\r\n{\"lat\":56,\"lng\":56},\r\n{\"lat\":54,\"lng\":54}]";
+                        //var jsonReader = new JsonTextReader(new StringReader(jsonT))
+                        //{
+                        //    SupportMultipleContent = true // This is important!
+                        //};
+                        //var jsonSerializer = new JsonSerializer();
+                        
+
+                        List<Coordinates> test = JsonConvert.DeserializeObject<List<Coordinates>>(jsonT);
+                        SectorsCity newTest = new SectorsCity {                  };
+                        for (int j = 0; j < test.Count(); j++) {
+                            jsonObj[0]["sectors"][row - 2]["coordinates"][j]["lat"] = test[j].lat;
+                            jsonObj[0]["sectors"][row - 2]["coordinates"][j]["lng"] = test[j].lng;
+                        }
+                        //jsonObj[0]["sectors"][row - 2]["coordinates"] = test;
+                        jsonObjTest.Add(jsonObj[0]);
+
+
+                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
+                        System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
+
+                        string json1 = System.IO.File.ReadAllText("../Bcc.Pledg/Resources/Test.json");
+
+                        //var logData = new LogData
+                        //{
+                        //    Code = "Координаты",
+                        //    Action = "Excel",
+                        //    Username = username,
+                        //    ChangeDate = DateTime.Today,
+                        //    IsArch = '0',
+                        //};
+                    }
+                    return "Ok";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Error";
+            }
+            
+        }
+        [HttpPost("test/{reference}")]
+        public ActionResult PostMethod([FromBody]SectorsCity sectors, string reference)
+        {
+            string json = System.IO.File.ReadAllText("../Bcc.Pledg/Resources/Test.json");
+            dynamic jsonObjTest = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+            //jsonObj[0]["city"] = sectors.city;
+            jsonObj[0] = sectors;
+            jsonObjTest.Add(jsonObj[0]);
+           
+
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
+            System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
+            
+            string json1 = System.IO.File.ReadAllText("../Bcc.Pledg/Resources/Test.json");
+          
+
+            var last = _reference.Where(r => r.city == "Актобе").FirstOrDefault();
+            var test = ReferenceContext.PostReference(reference, sectors);
+            return Ok(json1);
+        }
         [HttpGet("sectors")]
         public ActionResult GetRegions()
         {
@@ -34,12 +127,12 @@ namespace Bcc.Pledg.Controllers
             return Ok(test);
         }
 
-        [HttpGet("{city}/{point}")]
-        public string SearchSector(string city, string point )
+        [HttpGet("{city}/{point}/{typeLocCity}")]
+        public string SearchSector(string city, string typeLocCity, string point)
         {
             IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
             string[] pointArr = point.Split(" ");
-            return Raw(double.Parse(pointArr[0], formatter), double.Parse(pointArr[1], formatter), city);
+            return Raw(double.Parse(pointArr[0], formatter), double.Parse(pointArr[1], formatter), city, typeLocCity);
             //return Ray();
             //return new[] { Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city), Ray() };
         }
@@ -101,9 +194,9 @@ namespace Bcc.Pledg.Controllers
             return flag;
         }
 
-        public string Raw(double lng, double lat, string city) {
+        public string Raw(double lng, double lat, string city, string typeLocCity) {
             int npol, c = 0;
-            var arr = _reference.Where(r => r.city.Equals(city)).ToList();
+            var arr = _reference.Where(r => r.city.Equals(city) && r.type.Equals(typeLocCity)).ToList();
             //double lngTEST = 57.1887;
             //double latTEST = 50.275657;
             for (int k = 0; k < arr[0].sectors.Count(); k++)

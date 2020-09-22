@@ -1,33 +1,21 @@
-﻿[
-    {
-        "city": "Актобе",
-        "sectors": [
-            {
-                "sector": 1,
-                "sectorCode": "15101-1",
-                "coordinates": [
-                    {
-                        "lat": 1,
-                        "lng": 2
-                    },
-                    {
-                        "lat": 1,
-                        "lng": 5
-                    },
-                    {
-                        "lat": 3,
-                        "lng": 3
-                    },
-                    {
-                        "lat": 6,
-                        "lng": 5
-                    },
-                    {
-                        "lat": 3,
-                        "lng": 1
-                    }
-                ]
-            }
+[
+  {
+    "city": "bite",
+    "sectors": [
+      {
+        "sector": 1,
+        "sectorCode": "15101-1",
+        "coordinates": [
+          {
+            "lat": 1,
+            "lng": 2
+          },
+          {
+            "lat": 1,
+            "lng": 5
+          }
         ]
-    }
- ]
+      }
+    ]
+  }
+]

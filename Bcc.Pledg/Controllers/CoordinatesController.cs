@@ -44,7 +44,7 @@ namespace Bcc.Pledg.Controllers
                     
 
                     dynamic jsonObj = JsonConvert.DeserializeObject(jsonSample);
-                    jsonObj[0]["city"] = worksheet.Cells[2, 1].Value != null ? worksheet.Cells[2, 1].Value.ToString() : null;
+                    //jsonObj[0]["city"] = worksheet.Cells[2, 2].Value.ToString();
 
 
                     //add sectors
@@ -59,11 +59,11 @@ namespace Bcc.Pledg.Controllers
                     for (int row = 0; row <= rowCount-2; row++)
                     {
                         
-                        List<Coordinates> points = JsonConvert.DeserializeObject<List<Coordinates>>(worksheet.Cells[row+2, 4].Value.ToString());
-                        jsonObjTest[0]["type"] = worksheet.Cells[row + 2, 5].Value.ToString();
-                        jsonObjTest[0]["city"] = worksheet.Cells[row+2, 1].Value.ToString();
-                        jsonObjTest[0]["sectors"][row]["sectorCode"] = worksheet.Cells[row+2, 2].Value.ToString();
-                        jsonObjTest[0]["sectors"][row]["sector"] = Convert.ToInt32(worksheet.Cells[row+2, 3].Value);
+                        List<Coordinates> points = JsonConvert.DeserializeObject<List<Coordinates>>(worksheet.Cells[row+2, 5].Value.ToString());
+                        jsonObjTest[0]["type"] = worksheet.Cells[row + 2, 1].Value.ToString();
+                        jsonObjTest[0]["city"] = worksheet.Cells[row+2, 2].Value.ToString();
+                        jsonObjTest[0]["sectors"][row]["sectorCode"] = worksheet.Cells[row+2, 3].Value.ToString();
+                        jsonObjTest[0]["sectors"][row]["sector"] = Convert.ToInt32(worksheet.Cells[row+2, 4].Value);
 
                         //add points
                         for (int i = 0; i < points.Count-1; i++) {

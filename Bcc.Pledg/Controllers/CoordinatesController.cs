@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Bcc.Pledg.Models;
-using Bcc.Pledg.Models.Branch;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using OfficeOpenXml;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Bcc.Pledg.Controllers
@@ -43,42 +37,49 @@ namespace Bcc.Pledg.Controllers
                     ExcelWorksheet worksheet = package.Workbook.Worksheets["Лист1"];
                     int rowCount = worksheet.Dimension.Rows;
                     int ColCount = worksheet.Dimension.Columns;
+                    string output;
 
-                    string json = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/Test.json");
-                    dynamic jsonObjTest = JsonConvert.DeserializeObject(json);
+                    string jsonSample = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/Sample.json");
+                    dynamic jsonObjTest = JsonConvert.DeserializeObject(jsonSample);
+                    
 
-                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    dynamic jsonObj = JsonConvert.DeserializeObject(jsonSample);
                     jsonObj[0]["city"] = worksheet.Cells[2, 1].Value != null ? worksheet.Cells[2, 1].Value.ToString() : null;
 
-                    for (int row = 2; row <= rowCount; row++)
+
+                    //add sectors
+                    for (int i = 0; i < rowCount - 2; i++)
                     {
-                        jsonObj[0]["sectors"][row - 2]["sectorCode"] = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null;
-                        jsonObj[0]["sectors"][row-2]["sector"] = worksheet.Cells[row,3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null;
+                        jsonObjTest[0]["sectors"].Add(jsonObj[0]["sectors"][0]);
+                    }
+                    output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
+                    System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
 
-                        //jsonObj[0]["sectors"][row - 2]["coordinates"][0] = Newtonsoft.Json.JsonConvert.DeserializeObject<Coordinates>(worksheet.Cells[row, 4].Value);
-                        var jsonString = @"{""lat"":1,""lng"":2},{""lat"":3,""lng"":4}";
-                        var jsonT = "[{\"lat\":57.5,\"lng\":57.5},\r\n{\"lat\":56,\"lng\":56},\r\n{\"lat\":54,\"lng\":54}]";
-                        //var jsonReader = new JsonTextReader(new StringReader(jsonT))
-                        //{
-                        //    SupportMultipleContent = true // This is important!
-                        //};
-                        //var jsonSerializer = new JsonSerializer();
+
+                    for (int row = 0; row <= rowCount-2; row++)
+                    {
                         
+                        List<Coordinates> points = JsonConvert.DeserializeObject<List<Coordinates>>(worksheet.Cells[row+2, 4].Value.ToString());
+                        jsonObjTest[0]["type"] = worksheet.Cells[row + 2, 5].Value.ToString();
+                        jsonObjTest[0]["city"] = worksheet.Cells[row+2, 1].Value.ToString();
+                        jsonObjTest[0]["sectors"][row]["sectorCode"] = worksheet.Cells[row+2, 2].Value.ToString();
+                        jsonObjTest[0]["sectors"][row]["sector"] = Convert.ToInt32(worksheet.Cells[row+2, 3].Value);
 
-                        List<Coordinates> test = JsonConvert.DeserializeObject<List<Coordinates>>(jsonT);
-                        SectorsCity newTest = new SectorsCity {                  };
-                        for (int j = 0; j < test.Count(); j++) {
-                            jsonObj[0]["sectors"][row - 2]["coordinates"][j]["lat"] = test[j].lat;
-                            jsonObj[0]["sectors"][row - 2]["coordinates"][j]["lng"] = test[j].lng;
+                        //add points
+                        for (int i = 0; i < points.Count-1; i++) {
+                            jsonObjTest[0]["sectors"][row]["coordinates"].Add(jsonObj[0]["sectors"][0]["coordinates"][0]);
                         }
-                        //jsonObj[0]["sectors"][row - 2]["coordinates"] = test;
-                        jsonObjTest.Add(jsonObj[0]);
-
-
-                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
+                        output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
                         System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
+                        //
+                        for (var i= 0; i<points.Count; i++)
+                        {
+                            jsonObjTest[0]["sectors"][row]["coordinates"][i]["lat"] = points[i].lat;
+                            jsonObjTest[0]["sectors"][row]["coordinates"][i]["lng"] = points[i].lng;
+                        }
 
-                        string json1 = System.IO.File.ReadAllText("../Bcc.Pledg/Resources/Test.json");
+                        output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
+                        System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
 
                         //var logData = new LogData
                         //{
@@ -89,6 +90,13 @@ namespace Bcc.Pledg.Controllers
                         //    IsArch = '0',
                         //};
                     }
+                    string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
+                    dynamic jsonObjMain = JsonConvert.DeserializeObject(jsonMain);
+                    jsonObjMain.Add(jsonObjTest[0]);
+                    string output2 = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjMain, Newtonsoft.Json.Formatting.Indented);
+                    System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output2);
+
+
                     return "Ok";
                 }
             }

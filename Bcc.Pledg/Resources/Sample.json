@@ -1,0 +1,18 @@
+﻿[
+    {
+        "type": "город",
+        "city": "sample",
+        "sectors": [
+            {
+                "sector": 1,
+                "sectorCode": "sample",
+                "coordinates": [
+                    {
+                        "lat": 1,
+                        "lng": 2
+                    }
+                ]
+            }
+        ]
+    }
+]

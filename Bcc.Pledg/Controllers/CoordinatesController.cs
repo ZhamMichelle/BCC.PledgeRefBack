@@ -75,17 +75,12 @@ namespace Bcc.Pledg.Controllers
                     for (int row = 2; row <= rowCount; row++)
                     {
                         if (worksheet.Cells[row, 1].Value == null || worksheet.Cells[row, 2].Value == null ||
-                          worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
-                          worksheet.Cells[row, 5].Value == null)
+                         worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
+                         worksheet.Cells[row, 5].Value == null)
                         {
                             return $"Пустое поле на строке: {row}";
                         }
-                    };
-
-                    //Проверка
-                    for (int row = 2; row <= rowCount; row++)
-                    {
-                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(string) ||
+                        else if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(string) ||
                           worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(double) ||
                           worksheet.Cells[row, 5].Value.GetType() != typeof(string))
                         {
@@ -98,6 +93,16 @@ namespace Bcc.Pledg.Controllers
                     {
                         string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
                         List<SectorsCity> totalSectors = JsonConvert.DeserializeObject<List<SectorsCity>>(jsonMain) as List<SectorsCity>;
+
+                        for (int rowCheck = 2; rowCheck <= rowCount; rowCheck++) {
+                            if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() &&
+                             r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower() &&
+                             r.sectors.Any(z => z.sector == Convert.ToInt32(worksheet.Cells[row + 2, 4].Value))))
+                                return $@"Сектор под номером {Convert.ToInt32(worksheet.Cells[row + 2, 4].Value)}, " +
+                                    $@"с типом нас. пункта {worksheet.Cells[row + 2, 1].Value.ToString().ToLower()}, " +
+                                    $@"города {worksheet.Cells[row + 2, 2].Value.ToString()} уже имеетя в базе. " +
+                                    $"Удалите этот сектор из файла эксель и заново загрузите файл.";
+                        }
 
                         List<CoordinatesXY> points = JsonConvert.DeserializeObject<List<CoordinatesXY>>(worksheet.Cells[row + 2, 5].Value.ToString());
 

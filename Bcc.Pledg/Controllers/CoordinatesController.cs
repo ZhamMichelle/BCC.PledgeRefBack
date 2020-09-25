@@ -29,104 +29,30 @@ namespace Bcc.Pledg.Controllers
             _testClasses = ReferenceContext.GetReference<TestClass>();
             _logger = logger;
         }
-        [HttpPost("{reference}/test")]
-        public string PostSector([FromForm]IFormFile body,  [FromQuery]string username) {
-            var stream = body.OpenReadStream();
-            try
-            {
-                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage(stream))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Лист1"];
-                    int rowCount = worksheet.Dimension.Rows;
-                    int ColCount = worksheet.Dimension.Columns;
-                    string output;
-
-                    string jsonSample = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/Sample.json");
-                    dynamic jsonObjTest = JsonConvert.DeserializeObject(jsonSample);
-                    
-                    dynamic jsonObj = JsonConvert.DeserializeObject(jsonSample);  //helper
-
-
-                    //add sectors
-                    for (int i = 0; i < rowCount - 2; i++)
-                    {
-                        jsonObjTest[0]["sectors"].Add(jsonObj[0]["sectors"][0]);
-                    }
-                    output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
-                    System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
-
-
-                    for (int row = 0; row <= rowCount-2; row++)
-                    {
-                        List<Coordinates> points = JsonConvert.DeserializeObject<List<Coordinates>>(worksheet.Cells[row+2, 5].Value.ToString());
-                        jsonObjTest[0]["type"] = worksheet.Cells[row + 2, 1].Value.ToString();
-                        jsonObjTest[0]["city"] = worksheet.Cells[row+2, 2].Value.ToString();
-                        jsonObjTest[0]["sectors"][row]["sectorCode"] = worksheet.Cells[row+2, 3].Value.ToString();
-                        jsonObjTest[0]["sectors"][row]["sector"] = Convert.ToInt32(worksheet.Cells[row+2, 4].Value);
-
-                        //add points
-                        for (int i = 0; i < points.Count-1; i++) {
-                            jsonObjTest[0]["sectors"][row]["coordinates"].Add(jsonObj[0]["sectors"][0]["coordinates"][0]);
-                        }
-                        output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
-                        System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
-                        //
-                        for (var i= 0; i<points.Count; i++)
-                        {
-                            jsonObjTest[0]["sectors"][row]["coordinates"][i]["lat"] = points[i].lat;
-                            jsonObjTest[0]["sectors"][row]["coordinates"][i]["lng"] = points[i].lng;
-                        }
-
-                        output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
-                        System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
-
-                        //var logData = new LogData
-                        //{
-                        //    Code = "Координаты",
-                        //    Action = "Excel",
-                        //    Username = username,
-                        //    ChangeDate = DateTime.Today,
-                        //    IsArch = '0',
-                        //};
-                    }
-                    string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
-                    dynamic jsonObjMain = JsonConvert.DeserializeObject(jsonMain);
-                    jsonObjMain.Add(jsonObjTest[0]);
-                    string output2 = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjMain, Newtonsoft.Json.Formatting.Indented);
-                    System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output2);
-
-
-                    return "Ok";
-                }
-            }
-            catch (Exception ex)
-            {
-                return "Error";
-            }
-        }
 
         [HttpDelete("{city}/{typeLocCity}")]
         public string DeleteSector(string city, string typeLocCity)
         {
             try
             {
-
                 string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
 
                 List<SectorsCity> totalSectors = JsonConvert.DeserializeObject<List<SectorsCity>>(jsonMain) as List<SectorsCity>;
+                if (totalSectors.Any(r => r.city.Equals(city) && r.type.Equals(typeLocCity.ToLower()))) {
+                    var helperArr = totalSectors.Where(r => r.city.Equals(city) && r.type.Equals(typeLocCity.ToLower())).ToList();  //без хелпера Except почему то не читает. WTF
+                    var arr = totalSectors.Except(helperArr).ToList();
 
-                var helperArr = totalSectors.Where(r => r.city.Equals(city) && r.type.Equals(typeLocCity.ToLower())).ToList();
-                var arr = totalSectors.Except(helperArr).ToList();
+                    string output = Newtonsoft.Json.JsonConvert.SerializeObject(arr, Newtonsoft.Json.Formatting.Indented);
+                    System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output);
 
-                string output = Newtonsoft.Json.JsonConvert.SerializeObject(arr, Newtonsoft.Json.Formatting.Indented);
-                System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output);
-
-                return "Ok";
+                    return "Deleted";
+                }
+                return "NoData";
             }
             catch (Exception ex)
             {
-                return "Error";
+                ex.Message.ToString();
+                return "Error delete";
             }
         }
 
@@ -145,6 +71,29 @@ namespace Bcc.Pledg.Controllers
                     var element = new SectorsCity();
                     string output;
 
+                    //Проверка
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        if (worksheet.Cells[row, 1].Value == null || worksheet.Cells[row, 2].Value == null ||
+                          worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
+                          worksheet.Cells[row, 5].Value == null)
+                        {
+                            return $"Пустое поле на строке: {row}";
+                        }
+                    };
+
+                    //Проверка
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(string) ||
+                          worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(double) ||
+                          worksheet.Cells[row, 5].Value.GetType() != typeof(string))
+                        {
+                            return $"Неправильный формат на строке: {row}";
+                        }
+                    };
+
+
                     for (int row = 0; row <= rowCount - 2; row++)
                     {
                         string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
@@ -155,24 +104,28 @@ namespace Bcc.Pledg.Controllers
 
                         if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())) {
 
-
+                            totalSectors.Where(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())
+                                .FirstOrDefault().sectors.Add(new Sectors
+                                {
+                                    sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                    sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
+                                    coordinates = points
+                                }
+                            );
                         }
                         else {
                             element = new SectorsCity()
                             {
                                 type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
                                 city = worksheet.Cells[row + 2, 2].Value.ToString(),
-                                sectors = new Sectors[] { new Sectors {
+                                sectors = new List<Sectors> { new Sectors {
                                 sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
                                 sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
                                 coordinates = points
-                            }
-                            }
-                            };
+                            }}};
                             totalSectors.Add(element);
                         }
 
-                        
                         output = Newtonsoft.Json.JsonConvert.SerializeObject(totalSectors, Newtonsoft.Json.Formatting.Indented);
                         System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output);
                     }

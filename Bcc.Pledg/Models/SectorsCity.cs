@@ -12,11 +12,11 @@ namespace Bcc.Pledg.Models
         {
             type = "";
             city = "";
-            sectors = new Sectors[0];
+            sectors = new List<Sectors>();
         }
         public string type { get; set; }
         public string city { get; set; }
-        public Sectors[] sectors { get; set; }
+        public List<Sectors> sectors { get; set; }
     }
 
 

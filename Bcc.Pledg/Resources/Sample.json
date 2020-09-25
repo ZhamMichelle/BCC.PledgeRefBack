@@ -8,8 +8,8 @@
                 "sectorCode": "sample",
                 "coordinates": [
                     {
-                        "lat": 1,
-                        "lng": 2
+                        "lat": 1.0,
+                        "lng": 1.0
                     }
                 ]
             }

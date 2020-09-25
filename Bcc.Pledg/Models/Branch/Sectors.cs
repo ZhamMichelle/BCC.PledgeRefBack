@@ -9,16 +9,12 @@ namespace Bcc.Pledg.Models.Branch
     {
         public Sectors()
         {
-            coordinates = new CoordinatesXY[0];
+            coordinates = new List<CoordinatesXY>();
         }
         public int sector { get; set; }
         public string sectorCode { get; set; }
-        public CoordinatesXY[] coordinates { get; set; }
+        public List<CoordinatesXY> coordinates { get; set; }
     }
-
-
-
-
     public class CoordinatesXY
     {
         public double lng { get; set; }

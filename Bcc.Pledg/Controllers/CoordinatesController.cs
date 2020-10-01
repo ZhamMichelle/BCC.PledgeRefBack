@@ -86,53 +86,74 @@ namespace Bcc.Pledg.Controllers
                         {
                             return $"Неправильный формат на строке: {row}";
                         }
+
+                        try
+                        {
+                            JsonConvert.DeserializeObject<List<CoordinatesXY>>(worksheet.Cells[row, 5].Value.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            return $"Неправильный формат координат на строке: {row}";
+                        }
+
                     };
 
 
                     for (int row = 0; row <= rowCount - 2; row++)
                     {
-                        string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
-                        List<SectorsCity> totalSectors = JsonConvert.DeserializeObject<List<SectorsCity>>(jsonMain) as List<SectorsCity>;
+                        try
+                        {
+                            string jsonMain = System.IO.File.ReadAllText($"../Bcc.Pledg/Resources/SectorsCityTest.json");
+                            List<SectorsCity> totalSectors = JsonConvert.DeserializeObject<List<SectorsCity>>(jsonMain) as List<SectorsCity>;
 
-                        for (int rowCheck = 2; rowCheck <= rowCount; rowCheck++) {
-                            if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() &&
-                             r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower() &&
-                             r.sectors.Any(z => z.sector == Convert.ToInt32(worksheet.Cells[row + 2, 4].Value))))
-                                return $@"Сектор под номером {Convert.ToInt32(worksheet.Cells[row + 2, 4].Value)}, " +
-                                    $@"с типом нас. пункта {worksheet.Cells[row + 2, 1].Value.ToString().ToLower()}, " +
-                                    $@"города {worksheet.Cells[row + 2, 2].Value.ToString()} уже имеетя в базе. " +
-                                    $"Удалите этот сектор из файла эксель и заново загрузите файл.";
-                        }
-
-                        List<CoordinatesXY> points = JsonConvert.DeserializeObject<List<CoordinatesXY>>(worksheet.Cells[row + 2, 5].Value.ToString());
-
-
-                        if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())) {
-
-                            totalSectors.Where(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())
-                                .FirstOrDefault().sectors.Add(new Sectors
-                                {
-                                    sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
-                                    sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
-                                    coordinates = points
-                                }
-                            );
-                        }
-                        else {
-                            element = new SectorsCity()
+                            for (int rowCheck = 2; rowCheck <= rowCount; rowCheck++)
                             {
-                                type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
-                                city = worksheet.Cells[row + 2, 2].Value.ToString(),
-                                sectors = new List<Sectors> { new Sectors {
+                                if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() &&
+                                 r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower() &&
+                                 r.sectors.Any(z => z.sector == Convert.ToInt32(worksheet.Cells[row + 2, 4].Value))))
+                                    return $@"Сектор под номером {Convert.ToInt32(worksheet.Cells[row + 2, 4].Value)}, " +
+                                        $@"с типом нас. пункта {worksheet.Cells[row + 2, 1].Value.ToString().ToLower()}, " +
+                                        $@"города {worksheet.Cells[row + 2, 2].Value.ToString()} уже имеетя в базе. " +
+                                        $"Удалите этот сектор из файла эксель и заново загрузите файл.";
+                            }
+
+                            List<CoordinatesXY> points = JsonConvert.DeserializeObject<List<CoordinatesXY>>(worksheet.Cells[row + 2, 5].Value.ToString());
+
+
+                            if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower()))
+                            {
+
+                                totalSectors.Where(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())
+                                    .FirstOrDefault().sectors.Add(new Sectors
+                                    {
+                                        sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                        sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
+                                        coordinates = points
+                                    }
+                                );
+                            }
+                            else
+                            {
+                                element = new SectorsCity()
+                                {
+                                    type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
+                                    city = worksheet.Cells[row + 2, 2].Value.ToString(),
+                                    sectors = new List<Sectors> { new Sectors {
                                 sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
                                 sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
                                 coordinates = points
-                            }}};
-                            totalSectors.Add(element);
-                        }
+                            }}
+                                };
+                                totalSectors.Add(element);
+                            }
 
-                        output = Newtonsoft.Json.JsonConvert.SerializeObject(totalSectors, Newtonsoft.Json.Formatting.Indented);
-                        System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output);
+                            output = Newtonsoft.Json.JsonConvert.SerializeObject(totalSectors, Newtonsoft.Json.Formatting.Indented);
+                            System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/SectorsCityTest.json", output);
+
+                        }
+                        catch (Exception exc) {
+                            return $"Cтрока: {row}. Ошибка: {BadRequest(exc)}";
+                        }
                     }
           
                     return "Ok";

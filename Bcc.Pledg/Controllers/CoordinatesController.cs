@@ -10,28 +10,35 @@ using System.Text;
 using OfficeOpenXml;
 using Newtonsoft.Json;
 using Bcc.Pledg.Models.Branch;
+using Microsoft.EntityFrameworkCore;
+using Bcc.Pledg.Models.CoordinatesBD;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Bcc.Pledg.Controllers
 {
-    //[Authorize(Policy = "DMOD")]
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class CoordinatesController : ControllerBase
     {
         private readonly ILogger<CoordinatesController> _logger;
+        private readonly PostgresContext _context;
         private readonly SectorsCity[] _reference;
         private readonly SectorsCityTester[] _referenceTester;
         private readonly TestClass[] _testClasses;
-        public CoordinatesController(ILogger<CoordinatesController> logger)
+        public CoordinatesController(ILogger<CoordinatesController> logger, PostgresContext context)
         {
             _reference = ReferenceContext.GetReference<SectorsCity>();
             _referenceTester = ReferenceContext.GetReference<SectorsCityTester>();
             _testClasses = ReferenceContext.GetReference<TestClass>();
             _logger = logger;
+            _context = context;
         }
 
-        [HttpDelete("{city}/{typeLocCity}")]
-        public string DeleteSector(string city, string typeLocCity)
+        [HttpDelete("json/{city}/{typeLocCity}")]
+        public string DeleteSectorJson(string city, string typeLocCity)
         {
             try
             {
@@ -56,8 +63,38 @@ namespace Bcc.Pledg.Controllers
             }
         }
 
-        [HttpPost("{reference}")]
-        public string PostSectors([FromForm]IFormFile body, [FromQuery]string username)
+        [HttpDelete("{city}/{typeLocCity}")]
+        public async Task<ActionResult> DeleteSectorDB(string city, string typeLocCity)
+        {
+            try
+            {
+                var arrCity =  _context.SectorsCityDB.Include(i => i.SectorsDB).FirstOrDefault(r => r.City.Equals(city) && r.Type.Equals(typeLocCity.ToLower()));
+
+                if (arrCity!=null)
+                {
+                    var arrSector = _context.SectorsDB.Include(i => i.CoordinatesDB)
+                   .Where(r => r.SectorsCityDBId == arrCity.Id).ToList();
+
+                    var arrCoordinates = _context.CoordinatesDB.AsEnumerable().Where(x => arrSector.Any(key => x.SectorsDBId.Contains(key.Id))).ToList();
+
+                    _context.CoordinatesDB.RemoveRange(arrCoordinates);
+                    _context.SectorsDB.RemoveRange(arrSector);
+                    _context.SectorsCityDB.RemoveRange(arrCity);
+
+                    await _context.SaveChangesAsync();
+
+                    return Ok("Deleted");
+                }
+                return Ok("NoData");
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+                return Ok("Error delete");
+            }
+        }
+        [HttpPost("json/{reference}")]
+        public string PostSectorsJson([FromForm]IFormFile body, [FromQuery]string username)
         {
             var stream = body.OpenReadStream();
             try
@@ -165,29 +202,6 @@ namespace Bcc.Pledg.Controllers
             }
         }
 
-
-        [HttpPost("test/{reference}")]
-        public ActionResult PostMethod([FromBody]SectorsCity sectors, string reference)
-        {
-            string json = System.IO.File.ReadAllText("../Bcc.Pledg/Resources/Test.json");
-            dynamic jsonObjTest = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-
-            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-            //jsonObj[0]["city"] = sectors.city;
-            jsonObj[0] = sectors;
-            jsonObjTest.Add(jsonObj[0]);
-           
-
-            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObjTest, Newtonsoft.Json.Formatting.Indented);
-            System.IO.File.WriteAllTextAsync("../Bcc.Pledg/Resources/Test.json", output);
-            
-            string json1 = System.IO.File.ReadAllText("../Bcc.Pledg/Resources/Test.json");
-          
-
-            var last = _reference.Where(r => r.city == "Актобе").FirstOrDefault();
-            var test = ReferenceContext.PostReference(reference, sectors);
-            return Ok(json1);
-        }
         [HttpGet("sectors")]
         public ActionResult GetRegions()
         {
@@ -200,69 +214,11 @@ namespace Bcc.Pledg.Controllers
         {
             IFormatProvider formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
             string[] pointArr = point.Split(" ");
-            return Raw(double.Parse(pointArr[0], formatter), double.Parse(pointArr[1], formatter), city, typeLocCity);
-            //return Ray();
+            return RawDB(double.Parse(pointArr[0], formatter), double.Parse(pointArr[1], formatter), city, typeLocCity);
             //return new[] { Raw(Convert.ToDouble(pointArr[0].Replace(".", ",")), Convert.ToDouble(pointArr[1].Replace(".", ",")), city), Ray() };
         }
 
-        public int IsDoublePointInsidePolygon(double lng, double lat, string city)
-        {
-            int i1, i2, n, N, flag = 0;
-
-            double S, S1, S2, S3;
-            var arr = _reference.Where(r => r.city == city).ToList();
-            for (int j=0; j<arr[0].sectors.Count(); j++)
-            {
-                N = arr[0].sectors[j].coordinates.Count();
-            for (n = 0; n < N; n++)
-            {
-                flag = 0;
-                i1 = n < N - 1 ? n + 1 : 0;
-                while (flag == 0)
-                {
-                    i2 = i1 + 1;
-                    if (i2 >= N)
-                        i2 = 0;
-                    if (i2 == (n < N - 1 ? n + 1 : 0))
-                        break;
-                     Console.WriteLine($"j= {j}; n= {n}; i1= {i1}; i2= {i2}");
-                    
-                    S = Math.Abs(arr[0].sectors[j].coordinates[i1].lng * (arr[0].sectors[j].coordinates[i2].lat - arr[0].sectors[j].coordinates[n].lat) +
-                             arr[0].sectors[j].coordinates[i2].lng * (arr[0].sectors[j].coordinates[n].lat - arr[0].sectors[j].coordinates[i1].lat) +
-                             arr[0].sectors[j].coordinates[n].lng * (arr[0].sectors[j].coordinates[i1].lat - arr[0].sectors[j].coordinates[i2].lat));
-                     Console.WriteLine($"S= {S}");
-                    S1 = Math.Abs(arr[0].sectors[j].coordinates[i1].lng * (arr[0].sectors[j].coordinates[i2].lat - lat) +
-                              arr[0].sectors[j].coordinates[i2].lng * (lat - arr[0].sectors[j].coordinates[i1].lat) +
-                              lng * (arr[0].sectors[j].coordinates[i1].lat - arr[0].sectors[j].coordinates[i2].lat));
-                     Console.WriteLine($"S1= {S1}");
-                    S2 = Math.Abs(arr[0].sectors[j].coordinates[n].lng * (arr[0].sectors[j].coordinates[i2].lat - lat) +
-                              arr[0].sectors[j].coordinates[i2].lng * (lat - arr[0].sectors[j].coordinates[n].lat) +
-                              lng * (arr[0].sectors[j].coordinates[n].lat - arr[0].sectors[j].coordinates[i2].lat));
-                     Console.WriteLine($"S2= {S2}");
-                    S3 = Math.Abs(arr[0].sectors[j].coordinates[i1].lng * (arr[0].sectors[j].coordinates[n].lat - lat) +
-                              arr[0].sectors[j].coordinates[n].lng * (lat - arr[0].sectors[j].coordinates[i1].lat) +
-                              lng * (arr[0].sectors[j].coordinates[i1].lat - arr[0].sectors[j].coordinates[n].lat));
-                     Console.WriteLine($"S3= {S3}");
-                    if (Math.Abs(S - S1 - S2 - S3) <= 0.0001 || Math.Abs(S1 + S2 + S3 - S) <= 0.0001)
-                    {
-                        flag = arr[0].sectors[j].sector;
-                        break;
-                    }
-                    i1 = i1 + 1;
-                    if (i1 >= N)
-                        i1 = 0;
-                    break;
-                }
-                if (flag != 0)
-                    break;
-            }
-                if (flag != 0)
-                    break;
-            }
-            return flag;
-        }
-
-        public string Raw(double lng, double lat, string city, string typeLocCity) {
+        public string RawJson(double lng, double lat, string city, string typeLocCity) {
             int npol, c = 0;
             var arr = _reference.Where(r => r.city.Equals(city) && r.type.Equals(typeLocCity)).ToList();
             //double lngTEST = 57.1887;
@@ -293,40 +249,145 @@ namespace Bcc.Pledg.Controllers
             return "отсутствует";
         }
 
-        public string Ray()
+        public string RawDB(double lng, double lat, string city, string typeLocCity)
         {
-            var arr = _testClasses.Where(r => r.city.Equals("Актобе")).ToList();
-            double lng = 3;
-            double lat = 2;
-
             int npol, c = 0;
+            var arr = _context.SectorsDB.Include(i => i.CoordinatesDB)
+                .Where(r => r.SectorsCityDBId == _context.SectorsCityDB.Include(i => i.SectorsDB).FirstOrDefault(r => r.City.Equals(city) && r.Type.Equals(typeLocCity)).Id).ToList();
 
-            for (int k = 0; k < arr[0].sectors.Count(); k++)
+            for (int k = 0; k < arr.Count(); k++)
             {
                 c = 0;
-                npol = arr[0].sectors[k].coordinates.Count();
-
+                npol = arr[k].CoordinatesDB.Count();
                 for (int i = 0, j = npol - 1; i < npol; j = i++)
                 {
-                    if (((arr[0].sectors[k].coordinates[i].lat <= lat) && (lat < arr[0].sectors[k].coordinates[j].lat)) ||
-                             ((arr[0].sectors[k].coordinates[j].lat <= lat) && (lat < arr[0].sectors[k].coordinates[i].lat)))
+                    if (((arr[k].CoordinatesDB[i].Lat <= lat) && (lat < arr[k].CoordinatesDB[j].Lat)) ||
+                        ((arr[k].CoordinatesDB[j].Lat <= lat) && (lat < arr[k].CoordinatesDB[i].Lat)))
                     {
-                        if ((arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) != 0)
+                        if ((arr[k].CoordinatesDB[j].Lat - arr[k].CoordinatesDB[i].Lat) != 0)
                         {
-                            if (lng > ((arr[0].sectors[k].coordinates[j].lng - arr[0].sectors[k].coordinates[i].lng) * (lat - arr[0].sectors[k].coordinates[i].lat) / (arr[0].sectors[k].coordinates[j].lat - arr[0].sectors[k].coordinates[i].lat) + arr[0].sectors[k].coordinates[i].lng))
+                            if (lng > ((arr[k].CoordinatesDB[j].Lng - arr[k].CoordinatesDB[i].Lng) * (lat - arr[k].CoordinatesDB[i].Lat) / (arr[k].CoordinatesDB[j].Lat - arr[k].CoordinatesDB[i].Lat) + arr[k].CoordinatesDB[i].Lng))
                             {
-                                //Console.WriteLine($"test[{i}].y={test[i].y}; test[{j}].y={test[j].y}; test[{j}].x={test[j].x}; test[{i}].x={test[i].x}");
-                                c = ++c;
+                                 c = ++c;
                             }
                         }
                     }
                 }
                 if (c % 2 != 0)
                 {
-                    return "IN POLYHEDRON";
+                    return arr[k].Sector.ToString();
                 }
             }
-            return "not in";
+            return "отсутствует";
+        }
+
+
+        [HttpPost("{reference}")]
+        public async Task<ActionResult> PostSectorsToDB([FromForm]IFormFile body, [FromQuery]string username)
+        {
+            var stream = body.OpenReadStream();
+            try
+            {
+                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage(stream))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Лист1"];
+                    int rowCount = worksheet.Dimension.Rows;
+                    int ColCount = worksheet.Dimension.Columns;
+                    var element = new SectorsCityDB();
+                    string output;
+
+                    //Проверка
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        if (worksheet.Cells[row, 1].Value == null || worksheet.Cells[row, 2].Value == null ||
+                         worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
+                         worksheet.Cells[row, 5].Value == null)
+                        {
+                            return Ok($"Пустое поле на строке: {row}");
+                        }
+                        else if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(string) ||
+                          worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(double) ||
+                          worksheet.Cells[row, 5].Value.GetType() != typeof(string))
+                        {
+                            return Ok($"Неправильный формат на строке: {row}");
+                        }
+
+                        try
+                        {
+                            JsonConvert.DeserializeObject<List<CoordinatesXY>>(worksheet.Cells[row, 5].Value.ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            return Ok($"Неправильный формат координат на строке: {row}");
+                        }
+
+                    };
+
+
+                    for (int row = 0; row <= rowCount - 2; row++)
+                    {
+                        try
+                        {
+                            var data = _context.SectorsCityDB.Include(i => i.SectorsDB).ToList();
+
+                            for (int rowCheck = 2; rowCheck <= rowCount; rowCheck++)
+                            {
+                                if (data.Any(r => r.City == worksheet.Cells[row + 2, 2].Value.ToString() &&
+                                 r.Type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower() &&
+                                 r.SectorsDB.Any(z => z.Sector == Convert.ToInt32(worksheet.Cells[row + 2, 4].Value))))
+                                    return Ok($@"Сектор под номером {Convert.ToInt32(worksheet.Cells[row + 2, 4].Value)}, " +
+                                        $@"с типом нас. пункта {worksheet.Cells[row + 2, 1].Value.ToString().ToLower()}, " +
+                                        $@"города {worksheet.Cells[row + 2, 2].Value.ToString()} уже имеетя в базе. " +
+                                        $"Удалите этот сектор из файла эксель и заново загрузите файл.");
+                            }
+
+                            List<CoordinatesDB> points = JsonConvert.DeserializeObject<List<CoordinatesDB>>(worksheet.Cells[row + 2, 5].Value.ToString());
+
+
+                            if (data.Any(r => r.City == worksheet.Cells[row + 2, 2].Value.ToString() && r.Type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower()))
+                            {
+
+                                _context.SectorsCityDB.Where(r => r.City == worksheet.Cells[row + 2, 2].Value.ToString() && r.Type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())
+                                    .FirstOrDefault().SectorsDB.Add(new SectorsDB
+                                    {
+                                        Id = worksheet.Cells[row + 2, 3].Value.ToString(),
+                                        Sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                        CoordinatesDB = points,
+                                    }
+                                );
+                            }
+                            else
+                            {
+                                element = new SectorsCityDB()
+                                {
+                                    Type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
+                                    City = worksheet.Cells[row + 2, 2].Value.ToString(),
+                                    SectorsDB = new List<SectorsDB> { new SectorsDB {
+                                        Sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                        Id = worksheet.Cells[row + 2, 3].Value.ToString(),
+                                        CoordinatesDB = points
+                            }}
+                                };
+                                _context.SectorsCityDB.Add(element);
+                                
+                            }
+
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (Exception exc)
+                        {
+                            return Ok($"Cтрока: {row}. Ошибка: {BadRequest(exc)}");
+                        }
+                    }
+
+                    return Ok("Ok");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Ok("Error");
+            }
         }
 
     }

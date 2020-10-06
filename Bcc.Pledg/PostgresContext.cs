@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Bcc.Pledg.Models;
+using Bcc.Pledg.Models.CoordinatesBD;
 
 namespace Bcc.Pledg
 {
@@ -12,6 +13,10 @@ namespace Bcc.Pledg
         public PostgresContext(DbContextOptions<PostgresContext> options) : base(options) { }
         public DbSet<PledgeReference> PledgeRefs { get; set; }
         public DbSet<LogData> LogData { get; set; }
+        public DbSet<SectorsCityDB> SectorsCityDB { get; set; }
+        public DbSet<SectorsDB> SectorsDB { get; set; }
+        public DbSet<CoordinatesDB> CoordinatesDB { get; set; }
+
         public PostgresContext()
         {
             // Database.EnsureCreated();
@@ -71,9 +76,14 @@ namespace Bcc.Pledg
 
             modelBuilder.Entity<LogData>().HasIndex(u => u.Code);
 
-            modelBuilder.Entity<LogData>()
-                .Property(u=>u.IsArch).IsRequired()
-                .HasDefaultValue('0');
+            modelBuilder.Entity<SectorsDB>()
+                .Property(u => u.SectorsCityDBId).IsRequired();
+
+            modelBuilder.Entity<CoordinatesDB>()
+                .Property(u => u.SectorsDBId).IsRequired();
+
+            modelBuilder.Entity<PledgeReference>()
+                .Property(bc => bc.MinCostWithBargain).IsRequired();
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {

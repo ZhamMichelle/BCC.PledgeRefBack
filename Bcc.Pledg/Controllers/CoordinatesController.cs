@@ -253,7 +253,7 @@ namespace Bcc.Pledg.Controllers
         {
             int npol, c = 0;
             var arr = _context.SectorsDB.Include(i => i.CoordinatesDB)
-                .Where(r => r.SectorsCityDBId == _context.SectorsCityDB.Include(i => i.SectorsDB).FirstOrDefault(r => r.City.Equals(city) && r.Type.Equals(typeLocCity)).Id).ToList();
+                .Where(r => r.SectorsCityDBId == _context.SectorsCityDB.Include(i => i.SectorsDB).FirstOrDefault(r => r.City.Equals(city) && r.Type.Equals(typeLocCity.ToLower())).Id).ToList();
 
             for (int k = 0; k < arr.Count(); k++)
             {
@@ -335,7 +335,7 @@ namespace Bcc.Pledg.Controllers
                             {
                                 if (data.Any(r => r.City == worksheet.Cells[row + 2, 2].Value.ToString() &&
                                  r.Type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower() &&
-                                 r.SectorsDB.Any(z => z.Sector == Convert.ToInt32(worksheet.Cells[row + 2, 4].Value))))
+                                 r.SectorsDB.Any(z => z.Id == worksheet.Cells[row + 2, 3].Value.ToString())))
                                     return Ok($@"Сектор под номером {Convert.ToInt32(worksheet.Cells[row + 2, 4].Value)}, " +
                                         $@"с типом нас. пункта {worksheet.Cells[row + 2, 1].Value.ToString().ToLower()}, " +
                                         $@"города {worksheet.Cells[row + 2, 2].Value.ToString()} уже имеетя в базе. " +

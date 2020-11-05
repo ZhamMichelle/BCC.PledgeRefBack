@@ -52,7 +52,8 @@ namespace Bcc.Pledg.Controllers
                 allList = await _context.PledgeRefs.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode).ToListAsync();
             }
 
-            if (allList.Count > 1) return StatusCode(400, "Вернул больше 1 диапазона");
+            if (allList.Count > 1) return StatusCode(406, "Вернул больше 1 диапазона");
+            else if (allList.Count == 0) return StatusCode(406, "По входящим параметрам нет диапазона");
 
             var data = new { MinCostPerSQM = allList[0].MinCostPerSQM, MaxCostPerSQM = allList[0].MaxCostPerSQM };
 

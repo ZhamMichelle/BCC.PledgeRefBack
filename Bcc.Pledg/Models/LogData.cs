@@ -32,5 +32,11 @@ namespace Bcc.Pledg.Models
         public string Username { get; set; }
         public DateTime ChangeDate { get; set; }
         public char IsArch { get; set; }
+        public int? RCNameCode { get; set; }
+        public string RCName { get; set; }
+        public string ActualAdress { get; set; }
+        public string FinQualityLevelCode { get; set; }
+        public string FinQualityLevel { get; set; }
+        public string Type { get; set; }
     }
 }

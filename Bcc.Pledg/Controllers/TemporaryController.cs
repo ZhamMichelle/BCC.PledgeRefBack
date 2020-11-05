@@ -6,11 +6,12 @@ using Bcc.Pledg.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Bcc.Pledg.Controllers
 {
 
-    [Authorize(Policy = "DMOD")]
+    //[Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class TemporaryController : ControllerBase
@@ -29,6 +30,33 @@ namespace Bcc.Pledg.Controllers
         {
             var allList = await _context.PledgeRefs.Where(r => r.City == city).ToListAsync();
             return Ok(allList);
+        }
+        [HttpGet("priceRange")]
+        public async Task<ActionResult> PriceRange([FromBody] PriceRange priceRange)
+        {
+            var allList = new List<PledgeReference>();
+
+
+            if (priceRange.TypeEstateCode == "001" && priceRange.ApartmentLayoutCode != null)
+            {
+                allList = await _context.PledgeRefs.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode &&
+             r.ApartmentLayoutCode == priceRange.ApartmentLayoutCode && r.WallMaterialCode == priceRange.WallMaterialCode).ToListAsync();
+            }
+            else if (priceRange.TypeEstateCode == "002" && priceRange.ApartmentLayoutCode != null)
+            {
+                allList = await _context.PledgeRefs.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode
+             && r.WallMaterialCode == priceRange.WallMaterialCode && r.DetailAreaCode == priceRange.DetailAreaCode).ToListAsync();
+            }
+            else if (priceRange.TypeEstateCode == "003")
+            {
+                allList = await _context.PledgeRefs.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode).ToListAsync();
+            }
+
+            if (allList.Count > 1) return StatusCode(400, "Вернул больше 1 диапазона");
+
+            var data = new { MinCostPerSQM = allList[0].MinCostPerSQM, MaxCostPerSQM = allList[0].MaxCostPerSQM };
+
+            return Ok(data);
         }
 
         [HttpGet("search/sector")]

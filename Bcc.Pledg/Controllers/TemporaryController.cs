@@ -137,6 +137,7 @@ namespace Bcc.Pledg.Controllers
                 Username = username,
                 ChangeDate = DateTime.Today,
                 IsArch='1',
+                Type = "Первичка",
             });
 
             await _context.SaveChangesAsync();
@@ -181,6 +182,7 @@ namespace Bcc.Pledg.Controllers
                     Username = username,
                     ChangeDate = DateTime.Today,
                     IsArch='1',
+                    Type = "Первичка",
                 });
 
                 await _context.SaveChangesAsync();
@@ -230,6 +232,7 @@ namespace Bcc.Pledg.Controllers
                 Username = username,
                 ChangeDate = DateTime.Today,
                 IsArch='0',
+                Type = "Первичка",
             });
 
             await _context.SaveChangesAsync();
@@ -297,6 +300,7 @@ namespace Bcc.Pledg.Controllers
                         Username = username,
                         ChangeDate = DateTime.Today,
                         IsArch='0',
+                        Type = "Первичка",
                     });
 
                     await _context.SaveChangesAsync();
@@ -376,6 +380,7 @@ namespace Bcc.Pledg.Controllers
                         Username = username,
                         ChangeDate = DateTime.Today,
                         IsArch='0',
+                        Type = "Первичка",
                     });
 
                     await _context.SaveChangesAsync();

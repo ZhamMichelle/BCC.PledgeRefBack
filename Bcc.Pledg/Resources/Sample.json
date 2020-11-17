@@ -4,7 +4,7 @@
         "city": "sample",
         "sectors": [
             {
-                "sector": 1,
+                "sector": "1",
                 "sectorCode": "sample",
                 "coordinates": [
                     {

@@ -147,7 +147,7 @@ namespace Bcc.Pledg.Controllers
                             {
                                 if (totalSectors.Any(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() &&
                                  r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower() &&
-                                 r.sectors.Any(z => z.sector == Convert.ToInt32(worksheet.Cells[row + 2, 4].Value))))
+                                 r.sectors.Any(z => z.sector == worksheet.Cells[row, 4].Value.ToString())))
                                     return $@"Сектор под номером {Convert.ToInt32(worksheet.Cells[row + 2, 4].Value)}, " +
                                         $@"с типом нас. пункта {worksheet.Cells[row + 2, 1].Value.ToString().ToLower()}, " +
                                         $@"города {worksheet.Cells[row + 2, 2].Value.ToString()} уже имеетя в базе. " +
@@ -163,7 +163,7 @@ namespace Bcc.Pledg.Controllers
                                 totalSectors.Where(r => r.city == worksheet.Cells[row + 2, 2].Value.ToString() && r.type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())
                                     .FirstOrDefault().sectors.Add(new Sectors
                                     {
-                                        sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                        sector = worksheet.Cells[row, 4].Value.ToString(),
                                         sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
                                         coordinates = points
                                     }
@@ -176,7 +176,7 @@ namespace Bcc.Pledg.Controllers
                                     type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
                                     city = worksheet.Cells[row + 2, 2].Value.ToString(),
                                     sectors = new List<Sectors> { new Sectors {
-                                sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                sector = worksheet.Cells[row, 4].Value.ToString(),
                                 sectorCode = worksheet.Cells[row + 2, 3].Value.ToString(),
                                 coordinates = points
                             }}
@@ -352,7 +352,7 @@ namespace Bcc.Pledg.Controllers
                                     .FirstOrDefault().SectorsDB.Add(new SectorsDB
                                     {
                                         Id = worksheet.Cells[row + 2, 3].Value.ToString(),
-                                        Sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                        Sector = worksheet.Cells[row, 4].Value.ToString(),
                                         CoordinatesDB = points,
                                     }
                                 );
@@ -364,7 +364,7 @@ namespace Bcc.Pledg.Controllers
                                     Type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
                                     City = worksheet.Cells[row + 2, 2].Value.ToString(),
                                     SectorsDB = new List<SectorsDB> { new SectorsDB {
-                                        Sector = Convert.ToInt32(worksheet.Cells[row + 2, 4].Value),
+                                        Sector = worksheet.Cells[row, 4].Value.ToString(),
                                         Id = worksheet.Cells[row + 2, 3].Value.ToString(),
                                         CoordinatesDB = points
                             }}

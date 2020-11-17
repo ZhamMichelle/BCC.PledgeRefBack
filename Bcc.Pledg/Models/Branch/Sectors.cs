@@ -11,7 +11,7 @@ namespace Bcc.Pledg.Models.Branch
         {
             coordinates = new List<CoordinatesXY>();
         }
-        public int sector { get; set; }
+        public string sector { get; set; }
         public string sectorCode { get; set; }
         public List<CoordinatesXY> coordinates { get; set; }
     }

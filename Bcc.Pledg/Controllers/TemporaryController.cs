@@ -61,7 +61,7 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("search/sector")]
-        public async Task<ActionResult> GetBySearchSector(string city, int? sector)
+        public async Task<ActionResult> GetBySearchSector(string city, string sector)
         {
             if (sector != null)
             {
@@ -76,7 +76,7 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult> GetBySearch(string city, int? sector, string estate)
+        public async Task<ActionResult> GetBySearch(string city, string sector, string estate)
         {
             if (sector != null && estate != null)
             {

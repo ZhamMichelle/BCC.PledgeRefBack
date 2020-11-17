@@ -65,7 +65,7 @@ namespace Bcc.Pledg.Controllers
                     {
                         if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || 
                           worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(string) ||
-                          worksheet.Cells[row, 5].Value.GetType() != typeof(double) || 
+                          worksheet.Cells[row, 5].Value.GetType() != typeof(string) || 
                           worksheet.Cells[row, 7].Value.GetType() != typeof(string) || worksheet.Cells[row, 8].Value.GetType() != typeof(string) ||
                           worksheet.Cells[row, 9].Value.GetType() != typeof(string) ||
                           worksheet.Cells[row, 16].Value.GetType() != typeof(double) ||
@@ -85,7 +85,7 @@ namespace Bcc.Pledg.Controllers
                             CityCodeKATO = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,//
                             City = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,//
                             SectorCode = worksheet.Cells[row, 4].Value != null ? worksheet.Cells[row, 4].Value.ToString() : null,//
-                            Sector = Convert.ToInt32(worksheet.Cells[row, 5].Value),//
+                            Sector = worksheet.Cells[row, 5].Value != null ? worksheet.Cells[row, 5].Value.ToString() : null,     //Convert.ToInt32(worksheet.Cells[row, 5].Value),//
                             RelativityLocation = worksheet.Cells[row, 6].Value != null ? worksheet.Cells[row, 6].Value.ToString() : null,
                             SectorDescription = worksheet.Cells[row, 7].Value != null ? worksheet.Cells[row, 7].Value.ToString() : null,//
                             TypeEstateCode = worksheet.Cells[row, 8].Value != null ? worksheet.Cells[row, 8].Value.ToString() : null,//
@@ -118,7 +118,7 @@ namespace Bcc.Pledg.Controllers
                             CityCodeKATO = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
                             City = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,
                             SectorCode = worksheet.Cells[row, 4].Value != null ? worksheet.Cells[row, 4].Value.ToString() : null,
-                            Sector = Convert.ToInt32(worksheet.Cells[row, 5].Value),
+                            Sector = worksheet.Cells[row, 5].Value != null ? worksheet.Cells[row, 5].Value.ToString() : null, //Convert.ToInt32(worksheet.Cells[row, 5].Value),
                             RelativityLocation = worksheet.Cells[row, 6].Value != null ? worksheet.Cells[row, 6].Value.ToString() : null,
                             SectorDescription = worksheet.Cells[row, 7].Value != null ? worksheet.Cells[row, 7].Value.ToString() : null,
                             TypeEstateCode = worksheet.Cells[row, 8].Value != null ? worksheet.Cells[row, 8].Value.ToString() : null,

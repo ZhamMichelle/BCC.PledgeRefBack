@@ -14,7 +14,7 @@ namespace Bcc.Pledg.Models
         public string CityCodeKATO { get; set; }
         public string City { get; set; }
         public string SectorCode { get; set; }
-        public int Sector { get; set; }
+        public string Sector { get; set; }
         public string RelativityLocation { get; set; }
         public string SectorDescription { get; set; }
         public string TypeEstateCode { get; set; }

@@ -12,7 +12,7 @@ namespace Bcc.Pledg.Models.CoordinatesBD
             CoordinatesDB = new List<CoordinatesDB>();
         }
         public string Id { get; set; }       //SectorCode
-        public int Sector { get; set; }
+        public string Sector { get; set; }
         public List<CoordinatesDB> CoordinatesDB { get; set; }
         public int SectorsCityDBId { get; set; }
         public SectorsCityDB SectorsCityDB { get; set; }

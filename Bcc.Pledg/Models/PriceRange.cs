@@ -8,10 +8,10 @@ namespace Bcc.Pledg.Models
     public class PriceRange
     {
         public string CityCodeKATO { get; set; }
-        public int Sector { get; set; }
+        public string Sector { get; set; }
         public string TypeEstateCode { get; set; }
-        public string? ApartmentLayoutCode { get; set; }
+        public string ApartmentLayoutCode { get; set; }
         public int? WallMaterialCode { get; set; }
-        public string? DetailAreaCode { get; set; }
+        public string DetailAreaCode { get; set; }
     }
 }

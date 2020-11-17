@@ -10,7 +10,7 @@ namespace Bcc.Pledg.Models
         public int Id { get; set; }
         public string City { get; set; }
         public string SectorCode { get; set; }
-        public int Sector { get; set; }
+        public string Sector { get; set; }
         public List<Coordinates> Coordinates { get; set; }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bcc.Pledg.Models.CoordinatesBD
 {
@@ -12,5 +9,6 @@ namespace Bcc.Pledg.Models.CoordinatesBD
         public double Lat { get; set; }
         public string SectorsDBId { get; set; }
         public SectorsDB SectorsDB { get; set; }
+        public int SortIndex { get; set; }
     }
 }

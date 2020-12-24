@@ -252,21 +252,23 @@ namespace Bcc.Pledg.Controllers
         public string RawDB(double lng, double lat, string city, string typeLocCity)
         {
             int npol, c = 0;
+            List<CoordinatesDB> sortedCDB = new List<CoordinatesDB>();
             var arr = _context.SectorsDB.Include(i => i.CoordinatesDB)
                 .Where(r => r.SectorsCityDBId == _context.SectorsCityDB.Include(i => i.SectorsDB).FirstOrDefault(r => r.City.Equals(city) && r.Type.Equals(typeLocCity.ToLower())).Id).ToList();
 
             for (int k = 0; k < arr.Count(); k++)
             {
+                sortedCDB = arr[k].CoordinatesDB.OrderBy(p=>p.SortIndex).ToList();
                 c = 0;
                 npol = arr[k].CoordinatesDB.Count();
                 for (int i = 0, j = npol - 1; i < npol; j = i++)
                 {
-                    if (((arr[k].CoordinatesDB[i].Lat <= lat) && (lat < arr[k].CoordinatesDB[j].Lat)) ||
-                        ((arr[k].CoordinatesDB[j].Lat <= lat) && (lat < arr[k].CoordinatesDB[i].Lat)))
+                    if (((sortedCDB[i].Lat <= lat) && (lat < sortedCDB[j].Lat)) ||
+                        ((sortedCDB[j].Lat <= lat) && (lat < sortedCDB[i].Lat)))
                     {
-                        if ((arr[k].CoordinatesDB[j].Lat - arr[k].CoordinatesDB[i].Lat) != 0)
+                        if ((sortedCDB[j].Lat - sortedCDB[i].Lat) != 0)
                         {
-                            if (lng > ((arr[k].CoordinatesDB[j].Lng - arr[k].CoordinatesDB[i].Lng) * (lat - arr[k].CoordinatesDB[i].Lat) / (arr[k].CoordinatesDB[j].Lat - arr[k].CoordinatesDB[i].Lat) + arr[k].CoordinatesDB[i].Lng))
+                            if (lng > ((sortedCDB[j].Lng - sortedCDB[i].Lng) * (lat - sortedCDB[i].Lat) / (sortedCDB[j].Lat - sortedCDB[i].Lat) + sortedCDB[i].Lng))
                             {
                                  c = ++c;
                             }
@@ -282,7 +284,7 @@ namespace Bcc.Pledg.Controllers
         }
 
 
-        [HttpPost("{reference}")]
+        [HttpPost("upload/{reference}")]
         public async Task<ActionResult> PostSectorsToDB([FromForm]IFormFile body, [FromQuery]string username)
         {
             var stream = body.OpenReadStream();
@@ -325,7 +327,7 @@ namespace Bcc.Pledg.Controllers
                     };
 
 
-                    for (int row = 0; row <= rowCount - 2; row++)
+                    for (int row = 0; row <= rowCount-2; row++)
                     {
                         try
                         {
@@ -342,20 +344,30 @@ namespace Bcc.Pledg.Controllers
                                         $"Удалите этот сектор из файла эксель и заново загрузите файл.");
                             }
 
-                            List<CoordinatesDB> points = JsonConvert.DeserializeObject<List<CoordinatesDB>>(worksheet.Cells[row + 2, 5].Value.ToString());
 
+
+
+                            List<CoordinatesDB> points = JsonConvert.DeserializeObject<List<CoordinatesDB>>(worksheet.Cells[row + 2, 5].Value.ToString());
+                            var test = points;
 
                             if (data.Any(r => r.City == worksheet.Cells[row + 2, 2].Value.ToString() && r.Type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower()))
                             {
 
                                 _context.SectorsCityDB.Where(r => r.City == worksheet.Cells[row + 2, 2].Value.ToString() && r.Type == worksheet.Cells[row + 2, 1].Value.ToString().ToLower())
-                                    .FirstOrDefault().SectorsDB.Add(new SectorsDB
+                                    .FirstOrDefault().SectorsDB.Add(
+                                    new SectorsDB
                                     {
                                         Id = worksheet.Cells[row + 2, 3].Value.ToString(),
-                                        Sector = worksheet.Cells[row, 4].Value.ToString(),
-                                        CoordinatesDB = points,
+                                        Sector = worksheet.Cells[row + 2, 4].Value.ToString(),
+                                        //CoordinatesDB = points,
                                     }
                                 );
+                                _context.CoordinatesDB.AddRange(points.Select((p, i) =>
+                                {
+                                    p.SectorsDBId = worksheet.Cells[row + 2, 3].Value.ToString();
+                                    p.SortIndex = i;
+                                    return p;
+                                }));
                             }
                             else
                             {
@@ -363,21 +375,29 @@ namespace Bcc.Pledg.Controllers
                                 {
                                     Type = worksheet.Cells[row + 2, 1].Value.ToString().ToLower(),
                                     City = worksheet.Cells[row + 2, 2].Value.ToString(),
-                                    SectorsDB = new List<SectorsDB> { new SectorsDB {
-                                        Sector = worksheet.Cells[row, 4].Value.ToString(),
-                                        Id = worksheet.Cells[row + 2, 3].Value.ToString(),
-                                        CoordinatesDB = points
-                            }}
+                                    SectorsDB = new List<SectorsDB> {
+                                        new SectorsDB
+                                        {
+                                            Sector = worksheet.Cells[row+2, 4].Value.ToString(),
+                                            Id = worksheet.Cells[row + 2, 3].Value.ToString(),
+                                            //CoordinatesDB = points
+                                        }
+                                    }
                                 };
                                 _context.SectorsCityDB.Add(element);
-                                
-                            }
+                                _context.CoordinatesDB.AddRange(points.Select((p, i) =>
+                                {
+                                    p.SectorsDBId = worksheet.Cells[row + 2, 3].Value.ToString();
+                                    p.SortIndex = i;
+                                    return p;
+                                }));
 
+                            }
                             await _context.SaveChangesAsync();
                         }
                         catch (Exception exc)
                         {
-                            return Ok($"Cтрока: {row}. Ошибка: {BadRequest(exc)}");
+                            return Ok($"Cтрока: {row + 2}. Ошибка: {BadRequest(exc)}");
                         }
                     }
 

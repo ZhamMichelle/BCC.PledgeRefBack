@@ -38,5 +38,6 @@ namespace Bcc.Pledg.Models
         public string FinQualityLevelCode { get; set; }
         public string FinQualityLevel { get; set; }
         public string Type { get; set; }
+        public char? TypeCode { get; set; }
     }
 }

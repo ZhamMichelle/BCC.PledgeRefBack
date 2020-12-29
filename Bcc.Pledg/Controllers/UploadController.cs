@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using ExcelWorksheet = OfficeOpenXml.ExcelWorksheet;
 using Bcc.Pledg.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bcc.Pledg.Controllers
 {
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class UploadController : ControllerBase
@@ -113,6 +114,7 @@ namespace Bcc.Pledg.Controllers
 
                         var logData = new LogData
                         {
+                            TypeCode = '2',
                             Type = "Вторичка",
                             Code = worksheet.Cells[row, 1].Value != null ? worksheet.Cells[row, 1].Value.ToString() : null,
                             CityCodeKATO = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
@@ -220,8 +222,8 @@ namespace Bcc.Pledg.Controllers
                             FinQualityLevel = worksheet.Cells[row, 8].Value != null ? worksheet.Cells[row, 8].Value.ToString() : null,//
                             MinCostPerSQM = Convert.ToInt32(worksheet.Cells[row, 9].Value),//
                             MaxCostPerSQM = Convert.ToInt32(worksheet.Cells[row, 10].Value),//
-                            BeginDate = worksheet.Cells[row, 11].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value) : (DateTime?)null,
-                            EndDate = worksheet.Cells[row, 12].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 22].Value) : (DateTime?)null
+                            BeginDate = worksheet.Cells[row, 11].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 11].Value) : (DateTime?)null,
+                            EndDate = worksheet.Cells[row, 12].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 12].Value) : (DateTime?)null
                         };
                         if (_context.PledgeRefs.Any(r => r.Code == data.Code))
                         {
@@ -233,6 +235,7 @@ namespace Bcc.Pledg.Controllers
 
                         var logData = new LogData
                         {
+                            TypeCode = '1',
                             Type = "Первичка",
                             Code = worksheet.Cells[row, 1].Value != null ? worksheet.Cells[row, 1].Value.ToString() : null,
                             CityCodeKATO = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
@@ -244,8 +247,8 @@ namespace Bcc.Pledg.Controllers
                             FinQualityLevel= worksheet.Cells[row, 8].Value != null ? worksheet.Cells[row, 8].Value.ToString() : null,
                             MinCostPerSQM = Convert.ToInt32(worksheet.Cells[row, 9].Value),
                             MaxCostPerSQM = Convert.ToInt32(worksheet.Cells[row, 10].Value),
-                            BeginDate = worksheet.Cells[row, 11].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value) : (DateTime?)null,
-                            EndDate = worksheet.Cells[row, 12].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 22].Value) : (DateTime?)null,
+                            BeginDate = worksheet.Cells[row, 11].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 11].Value) : (DateTime?)null,
+                            EndDate = worksheet.Cells[row, 12].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 12].Value) : (DateTime?)null,
                             Action = "Excel",
                             Username = username,
                             ChangeDate = DateTime.Today,
@@ -257,7 +260,7 @@ namespace Bcc.Pledg.Controllers
                             var oldData = _context.LogData.Where(f => f.Code == data.Code && f.EndDate == null).ToList();
                             foreach (var item in oldData)
                             {
-                                item.EndDate = worksheet.Cells[row, 21].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 21].Value).AddDays(-1) : (DateTime?)null;
+                                item.EndDate = worksheet.Cells[row, 11].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 11].Value).AddDays(-1) : (DateTime?)null;
                                 item.IsArch = '1';
                             }
                         };

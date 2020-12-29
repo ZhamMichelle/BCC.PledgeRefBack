@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Bcc.Pledg.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bcc.Pledg.Controllers
 {
-    //[Authorize(Policy = "DMOD")]
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class PrimaryHousingController : ControllerBase
@@ -70,7 +67,9 @@ namespace Bcc.Pledg.Controllers
                 Username = username,
                 ChangeDate = DateTime.Today,
                 IsArch = '1',
+                TypeCode='2',
                 Type = "Вторичка",
+
             });
 
             await _context.SaveChangesAsync();
@@ -105,6 +104,7 @@ namespace Bcc.Pledg.Controllers
                     Username = username,
                     ChangeDate = DateTime.Today,
                     IsArch = '1',
+                    TypeCode='2',
                     Type = "Вторичка",
                 });
 
@@ -136,6 +136,7 @@ namespace Bcc.Pledg.Controllers
                 Username = username,
                 ChangeDate = DateTime.Today,
                 IsArch = '0',
+                TypeCode = '2',
                 Type = "Вторичка",
             });
 
@@ -185,6 +186,7 @@ namespace Bcc.Pledg.Controllers
                         Username = username,
                         ChangeDate = DateTime.Today,
                         IsArch = '0',
+                        TypeCode = '2',
                         Type = "Вторичка",
                     });
 
@@ -246,6 +248,7 @@ namespace Bcc.Pledg.Controllers
                         Username = username,
                         ChangeDate = DateTime.Today,
                         IsArch = '0',
+                        TypeCode = '2',
                         Type = "Вторичка",
                     });
 

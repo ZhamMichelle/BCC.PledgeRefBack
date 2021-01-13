@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Bcc.Pledg.Controllers
 {
 
-    [Authorize(Policy = "DMOD")]
+    //[Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class TemporaryController : ControllerBase
@@ -19,10 +19,30 @@ namespace Bcc.Pledg.Controllers
         private readonly PostgresContext _context;
         private readonly ILogger<TemporaryController> _logger;
 
+        public string City { get; private set; }
+
         public TemporaryController(PostgresContext context, ILogger<TemporaryController> logger)
         {
             _context = context;
             _logger = logger;
+        }
+
+        [HttpGet("existCities")]
+        public async Task<List<string>> GetExistCities() {
+            
+            var arr = await _context.PledgeRefs.Select(x=>new { x.City }).Distinct().ToListAsync();
+            List<string> existCities = new List<string>();
+
+            if (arr != null)
+            {
+                foreach (var item in arr)
+                {
+                    existCities.Add(item.City);
+                }
+            }
+            else existCities.Add("Не загружены города");
+
+            return existCities;
         }
 
         [HttpGet("city")]
@@ -60,42 +80,6 @@ namespace Bcc.Pledg.Controllers
             return Ok(data);
         }
 
-        [HttpPost("priceRange/Strategy")]
-        public async Task<ActionResult> PriceRangeRisk([FromBody] PriceRangeSecured priceRange)
-        {
-            var allList = new List<LogData>();
-
-
-            if (priceRange.TypeEstateCode == "001" && priceRange.ApartmentLayoutCode != null)
-            {
-                allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode &&
-             r.ApartmentLayoutCode == priceRange.ApartmentLayoutCode && r.WallMaterialCode == priceRange.WallMaterialCode && r.IsArch=='0' && r.TypeCode == priceRange.TypeCode).ToListAsync();
-            }
-            else if (priceRange.TypeEstateCode == "002" && priceRange.ApartmentLayoutCode != null)
-            {
-                allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode
-             && r.WallMaterialCode == priceRange.WallMaterialCode && r.DetailAreaCode == priceRange.DetailAreaCode && r.IsArch == '0' && r.TypeCode == priceRange.TypeCode).ToListAsync();
-            }
-            else if (priceRange.TypeEstateCode == "003")
-            {
-                allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.Sector == priceRange.Sector && r.TypeEstateCode == priceRange.TypeEstateCode && r.IsArch == '0' && r.TypeCode == priceRange.TypeCode).ToListAsync();
-            }
-
-            if (allList.Count > 1) return StatusCode(406, "Вернул больше 1 диапазона");
-            else if (allList.Count == 0) return StatusCode(406, "По входящим параметрам нет диапазона");
-
-            var data = new { MinCostPerSQM = allList[0].MinCostPerSQM, MaxCostPerSQM = allList[0].MaxCostPerSQM };
-
-            var priceRequest = allList[0];
-            priceRequest.Action = priceRange.NameStrategy;
-            priceRequest.Id = 0;
-
-            _context.LogData.Add(priceRequest);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(data);
-        }
 
         [HttpGet("search/sector")]
         public async Task<ActionResult> GetBySearchSector(string city, string sector)

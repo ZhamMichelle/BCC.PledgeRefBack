@@ -15,5 +15,8 @@ namespace Bcc.Pledg.Models
         public string ApartmentLayoutCode { get; set; }
         public int? WallMaterialCode { get; set; }
         public string DetailAreaCode { get; set; }
+        public int? RCNameCode { get; set; }
+        public string FinQualityLevelCode { get; set; }
+
     }
 }

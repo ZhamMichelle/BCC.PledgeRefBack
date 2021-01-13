@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Bcc.Pledg.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace Bcc.Pledg.Controllers
 {
@@ -23,6 +24,24 @@ namespace Bcc.Pledg.Controllers
             _logger = logger;
         }
 
+        [HttpGet("existCities")]
+        public async Task<List<string>> GetExistCities()
+        {
+
+            var arr = await _context.PrimaryPledgeRefs.Select(x => new { x.City }).Distinct().ToListAsync();
+            List<string> existCities = new List<string>();
+
+            if (arr != null)
+            {
+                foreach (var item in arr)
+                {
+                    existCities.Add(item.City);
+                }
+            }
+            else existCities.Add("Не загружены города");
+
+            return existCities;
+        }
 
         [HttpGet("city")]
         public async Task<ActionResult> GetCity([FromQuery]string city)

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Bcc.Pledg.Controllers
 {
-    [Authorize(Policy = "DMOD")]
+    //[Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class CoordinatesController : ControllerBase
@@ -35,6 +35,24 @@ namespace Bcc.Pledg.Controllers
             _testClasses = ReferenceContext.GetReference<TestClass>();
             _logger = logger;
             _context = context;
+        }
+
+        [HttpGet("existCities")]
+        public async Task<List<string>> GetExistCities() {
+
+            var arr = await _context.SectorsCityDB.ToListAsync();
+            List<string> existCities = new List<string>();
+
+            if (arr != null)
+            {
+                foreach (var item in arr)
+                {
+                    existCities.Add(item.City);
+                }
+            }
+            else existCities.Add("Не загружены города");
+
+            return existCities;
         }
 
         [HttpDelete("json/{city}/{typeLocCity}")]

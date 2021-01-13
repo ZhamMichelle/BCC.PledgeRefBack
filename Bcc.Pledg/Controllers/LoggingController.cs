@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System;
 using OfficeOpenXml;
+using System.Collections.Generic;
 
 namespace Bcc.Pledg.Controllers
 {
@@ -21,6 +22,25 @@ namespace Bcc.Pledg.Controllers
         public LoggingController(PostgresContext context)
         {
             _context = context;
+        }
+
+        [HttpGet("existCities")]
+        public async Task<List<string>> GetExistCities()
+        {
+
+            var arr = await _context.LogData.Select(x => new { x.City }).Distinct().ToListAsync();
+            List<string> existCities = new List<string>();
+
+            if (arr != null)
+            {
+                foreach (var item in arr)
+                {
+                    existCities.Add(item.City);
+                }
+            }
+            else existCities.Add("Не загружены города");
+
+            return existCities;
         }
 
         [HttpGet]

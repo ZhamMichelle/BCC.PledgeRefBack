@@ -40,7 +40,7 @@ namespace Bcc.Pledg.Controllers
         [HttpGet("existCities")]
         public async Task<List<string>> GetExistCities() {
 
-            var arr = await _context.SectorsCityDB.ToListAsync();
+            var arr = await _context.SectorsCityDB.Select(x => new { x.City }).Distinct().ToListAsync();
             List<string> existCities = new List<string>();
 
             if (arr != null)

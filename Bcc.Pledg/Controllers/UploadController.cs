@@ -197,7 +197,7 @@ namespace Bcc.Pledg.Controllers
 
                     for (int row = 1; row <= rowCount; row++)
                     {
-                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) ||worksheet.Cells[row, 2].Value.GetType() != typeof(string) ||
+                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) ||
                             worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(double) ||
                           worksheet.Cells[row, 5].Value.GetType() != typeof(string) || worksheet.Cells[row, 6].Value.GetType() != typeof(string) ||
                           worksheet.Cells[row, 7].Value.GetType() != typeof(string) || worksheet.Cells[row, 8].Value.GetType() != typeof(string) ||

@@ -39,7 +39,7 @@ namespace Bcc.Pledg.Controllers
                     int rowCount = worksheet.Dimension.Rows;
                     int ColCount = worksheet.Dimension.Columns;
 
-                    for (int row = 1; row <= rowCount; row++) {
+                    for (int row = 2; row <= rowCount; row++) {
                         if (worksheet.Cells[row, 1].Value == null || worksheet.Cells[row, 2].Value == null ||
                           worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
                           worksheet.Cells[row, 5].Value == null || worksheet.Cells[row, 7].Value ==null ||
@@ -53,7 +53,7 @@ namespace Bcc.Pledg.Controllers
                         }
                     };
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         if ((worksheet.Cells[row, 8].Value == "001" && worksheet.Cells[row, 12].Value == null && worksheet.Cells[row, 13].Value == null) ||
                             (worksheet.Cells[row, 8].Value == "002" && worksheet.Cells[row, 12].Value == null && worksheet.Cells[row, 13].Value == null))
@@ -62,7 +62,7 @@ namespace Bcc.Pledg.Controllers
                         }
                     };
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || 
                           worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(string) ||
@@ -78,7 +78,7 @@ namespace Bcc.Pledg.Controllers
                     };
 
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         var data = new PledgeReference
                         {
@@ -182,7 +182,7 @@ namespace Bcc.Pledg.Controllers
                     int rowCount = worksheet.Dimension.Rows;
                     int ColCount = worksheet.Dimension.Columns;
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         if (worksheet.Cells[row, 1].Value == null || worksheet.Cells[row, 2].Value == null ||
                           worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
@@ -195,7 +195,7 @@ namespace Bcc.Pledg.Controllers
                         }
                     };
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) ||
                             worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(double) ||
@@ -208,7 +208,7 @@ namespace Bcc.Pledg.Controllers
                     };
 
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         var data = new PrimaryPledgeRef
                         {

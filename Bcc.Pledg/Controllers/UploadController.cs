@@ -64,11 +64,12 @@ namespace Bcc.Pledg.Controllers
 
                     for (int row = 2; row <= rowCount; row++)
                     {
-                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(double) ||
-                          worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(string) ||
-                          worksheet.Cells[row, 5].Value.GetType() != typeof(string) || 
-                          worksheet.Cells[row, 7].Value.GetType() != typeof(string) || worksheet.Cells[row, 8].Value.GetType() != typeof(string) ||
-                          worksheet.Cells[row, 9].Value.GetType() != typeof(string) ||
+                        if (
+                          //  worksheet.Cells[row, 1].Value.GetType() != typeof(string) || 
+                          //worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(string) ||
+                          //worksheet.Cells[row, 5].Value.GetType() != typeof(string) || 
+                          //worksheet.Cells[row, 7].Value.GetType() != typeof(string) || worksheet.Cells[row, 8].Value.GetType() != typeof(string) ||
+                          //worksheet.Cells[row, 9].Value.GetType() != typeof(string) ||
                           worksheet.Cells[row, 16].Value.GetType() != typeof(double) ||
                           worksheet.Cells[row, 17].Value.GetType() != typeof(double) || worksheet.Cells[row, 18].Value.GetType() != typeof(double) ||
                           worksheet.Cells[row, 19].Value.GetType() != typeof(double) || worksheet.Cells[row, 20].Value.GetType() != typeof(double))

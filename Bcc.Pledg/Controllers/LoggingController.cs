@@ -86,41 +86,81 @@ namespace Bcc.Pledg.Controllers
         }
 
         [HttpGet("{page}/{size}")]
-        public async Task<ActionResult<PagedResult<LogData>>> GetData(int page, int size, char? status, string code, string city)
+        public async Task<ActionResult<PagedResult<LogData>>> GetData(int page, int size, char? status, string code, string city, string type)
         {
-            if (status != null && code == null && city==null)
+            if (status != null && code == null && city==null && type==null)
             {
                 var result = await _context.LogData.Where(r => r.IsArch == status).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status == null && code != null && city==null)
+            else if (status == null && code != null && city==null && type == null)
             {
                 var result = await _context.LogData.Where(r => r.Code == code).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status == null && code == null && city != null)
+            else if (status == null && code == null && city != null && type == null)
             {
                 var result = await _context.LogData.Where(r => r.City == city).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status != null && code != null && city == null)
+            else if (status == null && code == null && city == null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null && city == null && type == null)
             {
                 var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status != null && code == null && city != null)
+            else if (status != null && code == null && city != null && type == null)
             {
                 var result = await _context.LogData.Where(r => r.IsArch == status && r.City == city).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status== null && code != null && city != null)
+            else if (status != null && code == null && city == null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status== null && code != null && city != null && type == null)
             {
                 var result = await _context.LogData.Where(r => r.Code == code && r.City == city).GetPagedAsync(page, size);
                 return Ok(result);
             }
-            else if (status != null && code != null && city != null)
+            else if (status == null && code != null && city == null && type != null)
             {
-                var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code && r.City == city).GetPagedAsync(page, size);
+                var result = await _context.LogData.Where(r => r.Code == code && r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status == null && code == null && city != null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.City == city && r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null && city != null && type == null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code && r.City == city ).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status == null && code != null && city != null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.Code == code && r.City == city && r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code == null && city != null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status  && r.City == city && r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code && r.Type == type).GetPagedAsync(page, size);
+                return Ok(result);
+            }
+            else if (status != null && code != null && city != null && type != null)
+            {
+                var result = await _context.LogData.Where(r => r.IsArch == status && r.Code == code && r.City == city && r.Type == type).GetPagedAsync(page, size);
                 return Ok(result);
             }
             else {

@@ -29,7 +29,7 @@ namespace Bcc.Pledg.Controllers
             var allList = new List<LogData>();
 
             if (priceRange.TypeCode == '1') {
-                allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.RCNameCode == priceRange.RCNameCode && r.FinQualityLevelCode == priceRange.FinQualityLevelCode &&
+                allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.RCName == priceRange.RCName && r.FinQualityLevelCode == priceRange.FinQualityLevelCode &&
                   r.Action.Contains("Strategy_") == false && r.IsArch == '0').ToListAsync();
             }
             else if (priceRange.TypeCode == '2') {

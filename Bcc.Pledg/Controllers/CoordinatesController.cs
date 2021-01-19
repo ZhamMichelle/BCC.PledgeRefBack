@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Bcc.Pledg.Controllers
 {
-    //[Authorize(Policy = "DMOD")]
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class CoordinatesController : ControllerBase

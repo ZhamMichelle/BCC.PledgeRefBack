@@ -64,7 +64,7 @@ namespace Bcc.Pledg.Controllers
 
                     for (int row = 2; row <= rowCount; row++)
                     {
-                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || 
+                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(double) ||
                           worksheet.Cells[row, 3].Value.GetType() != typeof(string) || worksheet.Cells[row, 4].Value.GetType() != typeof(string) ||
                           worksheet.Cells[row, 5].Value.GetType() != typeof(string) || 
                           worksheet.Cells[row, 7].Value.GetType() != typeof(string) || worksheet.Cells[row, 8].Value.GetType() != typeof(string) ||
@@ -225,9 +225,9 @@ namespace Bcc.Pledg.Controllers
                             BeginDate = worksheet.Cells[row, 11].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 11].Value) : (DateTime?)null,
                             EndDate = worksheet.Cells[row, 12].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 12].Value) : (DateTime?)null
                         };
-                        if (_context.PledgeRefs.Any(r => r.Code == data.Code))
+                        if (_context.PrimaryPledgeRefs.Any(r => r.Code == data.Code))
                         {
-                            _context.PledgeRefs.Remove(_context.PledgeRefs.FirstOrDefault(f => f.Code == data.Code));
+                            _context.PrimaryPledgeRefs.Remove(_context.PrimaryPledgeRefs.FirstOrDefault(f => f.Code == data.Code));
                         };
 
                         _context.PrimaryPledgeRefs.Add(data);

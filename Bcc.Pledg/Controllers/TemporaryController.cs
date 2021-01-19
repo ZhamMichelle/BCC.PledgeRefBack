@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Bcc.Pledg.Controllers
 {
 
-    //[Authorize(Policy = "DMOD")]
+    [Authorize(Policy = "DMOD")]
     [Route("[controller]")]
     [ApiController]
     public class TemporaryController : ControllerBase

@@ -191,7 +191,7 @@ namespace Bcc.Pledg.Controllers
                 worksheet.Cells["I1"].Value = "Код Типа недвижимости";
                 worksheet.Cells["J1"].Value = "Тип недвижимости по справочнику";
                 worksheet.Cells["K1"].Value = "Код Планировка квартир";
-                worksheet.Cells["L1"].Value = "Код Планировка квартир";
+                worksheet.Cells["L1"].Value = "Планировка квартир";
                 worksheet.Cells["M1"].Value = "Код Материал стен";
                 worksheet.Cells["N1"].Value = "Материал стен";
                 worksheet.Cells["O1"].Value = "Код детализации площади по жилому дому";
@@ -207,6 +207,13 @@ namespace Bcc.Pledg.Controllers
                 worksheet.Cells["Y1"].Value = "Исполнитель";
                 worksheet.Cells["Z1"].Value = "Дата изменения";
                 worksheet.Cells["AA1"].Value = "Статус Действ./Арх.";
+                worksheet.Cells["AB1"].Value = "Код типа жилья";
+                worksheet.Cells["AC1"].Value = "Тип жилья";
+                worksheet.Cells["AD1"].Value = "Код наименования ЖК";
+                worksheet.Cells["AE1"].Value = "Наименование ЖК";
+                worksheet.Cells["AF1"].Value = "Фактический адрес";
+                worksheet.Cells["AG1"].Value = "Код уровня качества отделки";
+                worksheet.Cells["AH1"].Value = "Уровень качества отделки";
                 worksheet.Row(1).Style.Font.Bold = true;
 
 
@@ -240,6 +247,13 @@ namespace Bcc.Pledg.Controllers
                     worksheet.Cells[i + 2, 25].Value = logData[i].Username;
                     worksheet.Cells[i + 2, 26].Value = logData[i].ChangeDate.ToShortDateString();
                     worksheet.Cells[i + 2, 27].Value = logData[i].IsArch=='0' ? "Действующий" : "Архивный";
+                    worksheet.Cells[i + 2, 28].Value = logData[i].TypeCode;
+                    worksheet.Cells[i + 2, 29].Value = logData[i].Type;
+                    worksheet.Cells[i + 2, 30].Value = logData[i].RCNameCode;
+                    worksheet.Cells[i + 2, 31].Value = logData[i].RCName;
+                    worksheet.Cells[i + 2, 32].Value = logData[i].ActualAdress;
+                    worksheet.Cells[i + 2, 33].Value = logData[i].FinQualityLevelCode;
+                    worksheet.Cells[i + 2, 34].Value = logData[i].FinQualityLevel;
                 }
 
                 using (var stream = new MemoryStream())

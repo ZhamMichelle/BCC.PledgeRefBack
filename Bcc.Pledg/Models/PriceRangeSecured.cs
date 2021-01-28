@@ -10,7 +10,7 @@ namespace Bcc.Pledg.Models
         public char TypeCode { get; set; }
         public string NameStrategy { get; set; }
         public string CityCodeKATO { get; set; }
-        public string Sector { get; set; }
+        public string SectorCode { get; set; }
         public string TypeEstateCode { get; set; }
         public string ApartmentLayoutCode { get; set; }
         public int? WallMaterialCode { get; set; }

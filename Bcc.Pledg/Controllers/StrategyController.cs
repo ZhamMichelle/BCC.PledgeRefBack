@@ -39,7 +39,7 @@ namespace Bcc.Pledg.Controllers
                  r.ApartmentLayoutCode == priceRange.ApartmentLayoutCode && r.WallMaterialCode == priceRange.WallMaterialCode && r.IsArch == '0'
                  && r.TypeCode == priceRange.TypeCode && r.Action.Contains("Strategy_") == false).ToListAsync();
                 }
-                else if (priceRange.TypeEstateCode == "002" && priceRange.ApartmentLayoutCode != null)
+                else if (priceRange.TypeEstateCode == "002" && priceRange.DetailAreaCode != null)
                 {
                     allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.SectorCode == priceRange.SectorCode && r.TypeEstateCode == priceRange.TypeEstateCode
                  && r.WallMaterialCode == priceRange.WallMaterialCode && r.DetailAreaCode == priceRange.DetailAreaCode && r.IsArch == '0' &&

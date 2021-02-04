@@ -17,6 +17,7 @@ namespace Bcc.Pledg
         public DbSet<SectorsDB> SectorsDB { get; set; }
         public DbSet<CoordinatesDB> CoordinatesDB { get; set; }
         public DbSet<PrimaryPledgeRef> PrimaryPledgeRefs{ get; set; }
+        public DbSet<WallMaterialReference> WallMaterialReferences { get; set; }
 
         public PostgresContext()
         {
@@ -87,6 +88,8 @@ namespace Bcc.Pledg
                 .Property(bc => bc.MinCostWithBargain).IsRequired();
 
             modelBuilder.Entity<PrimaryPledgeRef>().HasKey(u => u.Id);
+
+            modelBuilder.Entity<WallMaterialReference>().HasKey(u => u.Id);
 
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())

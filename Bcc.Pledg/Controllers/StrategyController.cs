@@ -33,16 +33,22 @@ namespace Bcc.Pledg.Controllers
                   r.Action.Contains("Strategy_") == false && r.IsArch == '0').ToListAsync();
             }
             else if (priceRange.TypeCode == '2') {
+                var wallMaterialCodeGF = new WallMaterialReference();
+                if (priceRange.WallMaterialCode != null) {
+                    int type = priceRange.CityCodeKATO == "471010" ? 3 : priceRange.CityCodeKATO == "71" ? 2 : 1;
+                    wallMaterialCodeGF = await _context.WallMaterialReferences.FirstOrDefaultAsync(r=>r.WallMaterialCodeColvir==priceRange.WallMaterialCode && r.Type == type);
+                }
+
                 if (priceRange.TypeEstateCode == "001" && priceRange.ApartmentLayoutCode != null)
                 {
                     allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.SectorCode == priceRange.SectorCode && r.TypeEstateCode == priceRange.TypeEstateCode &&
-                 r.ApartmentLayoutCode == priceRange.ApartmentLayoutCode && r.WallMaterialCode == priceRange.WallMaterialCode && r.IsArch == '0'
+                 r.ApartmentLayoutCode == priceRange.ApartmentLayoutCode && r.WallMaterialCode == wallMaterialCodeGF.WallMaterialCodeGF && r.IsArch == '0'
                  && r.TypeCode == priceRange.TypeCode && r.Action.Contains("Strategy_") == false).ToListAsync();
                 }
                 else if (priceRange.TypeEstateCode == "002" && priceRange.DetailAreaCode != null)
                 {
                     allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.SectorCode == priceRange.SectorCode && r.TypeEstateCode == priceRange.TypeEstateCode
-                 && r.WallMaterialCode == priceRange.WallMaterialCode && r.DetailAreaCode == priceRange.DetailAreaCode && r.IsArch == '0' &&
+                 && r.WallMaterialCode == wallMaterialCodeGF.WallMaterialCodeGF  && r.DetailAreaCode == priceRange.DetailAreaCode && r.IsArch == '0' &&
                  r.TypeCode == priceRange.TypeCode && r.Action.Contains("Strategy_") == false).ToListAsync();
                 }
                 else if (priceRange.TypeEstateCode == "003")

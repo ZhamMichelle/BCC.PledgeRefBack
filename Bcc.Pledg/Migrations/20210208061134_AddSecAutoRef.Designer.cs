@@ -3,15 +3,17 @@ using System;
 using Bcc.Pledg;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Bcc.Pledg.Migrations
 {
     [DbContext(typeof(PostgresContext))]
-    partial class PostgresContextModelSnapshot : ModelSnapshot
+    [Migration("20210208061134_AddSecAutoRef")]
+    partial class AddSecAutoRef
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +145,7 @@ namespace Bcc.Pledg.Migrations
                     b.Property<char>("IsArch")
                         .HasColumnType("character(1)");
 
-                    b.Property<long?>("MarketCost")
+                    b.Property<long>("MarketCost")
                         .HasColumnType("bigint");
 
                     b.Property<int?>("MaxCostPerSQM")
@@ -152,7 +154,7 @@ namespace Bcc.Pledg.Migrations
                     b.Property<int?>("MaxCostWithBargain")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaxPercentageDeviation")
+                    b.Property<int>("MaxPercentageDeviation")
                         .HasColumnType("integer");
 
                     b.Property<int?>("MinCostPerSQM")
@@ -161,7 +163,7 @@ namespace Bcc.Pledg.Migrations
                     b.Property<int?>("MinCostWithBargain")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ProduceYear")
+                    b.Property<int>("ProduceYesr")
                         .HasColumnType("integer");
 
                     b.Property<string>("RCName")
@@ -380,13 +382,13 @@ namespace Bcc.Pledg.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<long?>("MarketCost")
+                    b.Property<long>("MarketCost")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("MaxPercentageDeviation")
+                    b.Property<int>("MaxPercentageDeviation")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ProduceYear")
+                    b.Property<int>("ProduceYesr")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

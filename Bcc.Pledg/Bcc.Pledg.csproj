@@ -10,6 +10,8 @@
     <Compile Remove="Migrations\20200801081708_AddIsArch.Designer.cs" />
     <Compile Remove="Migrations\20200801083413_AddIsArch.cs" />
     <Compile Remove="Migrations\20200801083413_AddIsArch.Designer.cs" />
+    <Compile Remove="Migrations\20210208062809_SecAutoTemporaryParam.cs" />
+    <Compile Remove="Migrations\20210208062809_SecAutoTemporaryParam.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -277,5 +277,110 @@ namespace Bcc.Pledg.Controllers
                 return "Error";
             }
         }
-    }
+
+
+        [HttpPost("secondaryAutoUpload")]
+        public string ImportSecondaryAuto([FromForm]IFormFile body, [FromQuery]string username)
+        {
+
+            var stream = body.OpenReadStream();
+            try
+            {
+                using (OfficeOpenXml.ExcelPackage package = new OfficeOpenXml.ExcelPackage(stream))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Лист1"];
+                    int rowCount = worksheet.Dimension.Rows;
+                    int ColCount = worksheet.Dimension.Columns;
+
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        if (worksheet.Cells[row, 1].Value == null || worksheet.Cells[row, 2].Value == null ||
+                          worksheet.Cells[row, 3].Value == null || worksheet.Cells[row, 4].Value == null ||
+                        worksheet.Cells[row, 6].Value == null ||
+                          worksheet.Cells[row, 7].Value == null)
+                        {
+
+                            return $"Пустое поле на строке: {row}";
+                        }
+                    };
+
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        if (worksheet.Cells[row, 1].Value.GetType() != typeof(string) || worksheet.Cells[row, 2].Value.GetType() != typeof(string) ||
+                            worksheet.Cells[row, 4].Value.GetType() != typeof(double) || 
+                            worksheet.Cells[row, 6].Value.GetType() != typeof(double))
+                        {
+                            return $"Неправильный формат на строке: {row}";
+                        }
+                    };
+
+
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        //try
+                        //{
+                            var data = new SecondaryAutoRef
+                            {
+                                Code = worksheet.Cells[row, 1].Value != null ? worksheet.Cells[row, 1].Value.ToString() : null,
+                                CarBrand = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
+                                CarModel = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,
+                                ProduceYear = Convert.ToInt16(worksheet.Cells[row, 4].Value),
+                                MarketCost = Convert.ToInt64(worksheet.Cells[row, 5].Value),
+                                MaxPercentageDeviation = Convert.ToInt16(worksheet.Cells[row, 6].Value),
+                                BeginDate = worksheet.Cells[row, 7].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 7].Value) : (DateTime?)null,
+                                EndDate = worksheet.Cells[row, 8].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 8].Value) : (DateTime?)null
+                            };
+                            if (_context.SecondaryAutoRefs.Any(r => r.Code == data.Code))
+                            {
+                                _context.SecondaryAutoRefs.Remove(_context.SecondaryAutoRefs.FirstOrDefault(f => f.Code == data.Code));
+                            };
+
+                            _context.SecondaryAutoRefs.Add(data);
+
+
+                            var logData = new LogData
+                            {
+                                TypeCode = '3',
+                                Type = "Вторичка Авто",
+                                Code = worksheet.Cells[row, 1].Value != null ? worksheet.Cells[row, 1].Value.ToString() : null,
+                                CarBrand = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
+                                CarModel = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,
+                                ProduceYear = Convert.ToInt16(worksheet.Cells[row, 4].Value),
+                                MarketCost = Convert.ToInt64(worksheet.Cells[row, 5].Value),
+                                MaxPercentageDeviation = Convert.ToInt16(worksheet.Cells[row, 6].Value),
+                                BeginDate = worksheet.Cells[row, 7].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 7].Value) : (DateTime?)null,
+                                EndDate = worksheet.Cells[row, 8].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 8].Value) : (DateTime?)null,
+                                Action = "Excel",
+                                Username = username,
+                                ChangeDate = DateTime.Today,
+                                IsArch = '0',
+                            };
+
+                            if (_context.LogData.Any(r => r.Code == data.Code))
+                            {
+                                var oldData = _context.LogData.Where(f => f.Code == data.Code && f.EndDate == null).ToList();
+                                foreach (var item in oldData)
+                                {
+                                    item.EndDate = worksheet.Cells[row, 7].Value != null ? Convert.ToDateTime(worksheet.Cells[row, 7].Value).AddDays(-1) : (DateTime?)null;
+                                    item.IsArch = '1';
+                                }
+                            };
+
+                            _context.LogData.Add(logData);
+                            _context.SaveChanges();
+                        }
+                    //    catch (Exception exx) {
+                    //        return "Error: " + row;
+                    //    }
+                    //}
+                    return "Ok";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Error";
+            }
+        }
+}
 }

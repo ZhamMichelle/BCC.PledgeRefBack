@@ -39,5 +39,10 @@ namespace Bcc.Pledg.Models
         public string FinQualityLevel { get; set; }
         public string Type { get; set; }
         public char? TypeCode { get; set; }
+        public string CarBrand { get; set; }
+        public string CarModel { get; set; }
+        public int? ProduceYear { get; set; }
+        public long? MarketCost { get; set; }
+        public int? MaxPercentageDeviation { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace Bcc.Pledg
         public DbSet<CoordinatesDB> CoordinatesDB { get; set; }
         public DbSet<PrimaryPledgeRef> PrimaryPledgeRefs{ get; set; }
         public DbSet<WallMaterialReference> WallMaterialReferences { get; set; }
-
+        public DbSet<SecondaryAutoRef> SecondaryAutoRefs { get; set; }
         public PostgresContext()
         {
             // Database.EnsureCreated();
@@ -91,6 +91,7 @@ namespace Bcc.Pledg
 
             modelBuilder.Entity<WallMaterialReference>().HasKey(u => u.Id);
 
+            modelBuilder.Entity<SecondaryAutoRef>().HasKey(u => u.Id);
 
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {

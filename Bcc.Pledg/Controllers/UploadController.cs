@@ -342,7 +342,7 @@ namespace Bcc.Pledg.Controllers
                             var logData = new LogData
                             {
                                 TypeCode = '3',
-                                Type = "Вторичка Авто",
+                                Type = "Авто Вторичка",
                                 Code = worksheet.Cells[row, 1].Value != null ? worksheet.Cells[row, 1].Value.ToString() : null,
                                 CarBrand = worksheet.Cells[row, 2].Value != null ? worksheet.Cells[row, 2].Value.ToString() : null,
                                 CarModel = worksheet.Cells[row, 3].Value != null ? worksheet.Cells[row, 3].Value.ToString() : null,

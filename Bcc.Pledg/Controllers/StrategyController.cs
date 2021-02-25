@@ -28,15 +28,21 @@ namespace Bcc.Pledg.Controllers
         {
             var allList = new List<LogData>();
 
-            if (priceRange.TypeCode == '1') {
+            if (priceRange.TypeCode == '1')
+            {
                 allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.RCName == priceRange.RCName && r.FinQualityLevelCode == priceRange.FinQualityLevelCode &&
                   r.Action.Contains("Strategy_") == false && r.IsArch == '0').ToListAsync();
             }
-            else if (priceRange.TypeCode == '2') {
+            else if (priceRange.TypeCode == '2' && priceRange.RCName != null) {
+                allList = await _context.LogData.Where(r => r.CityCodeKATO == priceRange.CityCodeKATO && r.RCName == priceRange.RCName && r.Action.Contains("Strategy_") == false && r.IsArch == '0').ToListAsync();
+            }
+            else if (priceRange.TypeCode == '2')
+            {
                 var wallMaterialCodeGF = new WallMaterialReference();
-                if (priceRange.WallMaterialCode != null) {
+                if (priceRange.WallMaterialCode != null)
+                {
                     int type = priceRange.CityCodeKATO == "471010" ? 3 : priceRange.CityCodeKATO == "71" ? 2 : 1;
-                    wallMaterialCodeGF = await _context.WallMaterialReferences.FirstOrDefaultAsync(r=>r.WallMaterialCodeColvir==priceRange.WallMaterialCode && r.Type == type);
+                    wallMaterialCodeGF = await _context.WallMaterialReferences.FirstOrDefaultAsync(r => r.WallMaterialCodeColvir == priceRange.WallMaterialCode && r.Type == type);
                 }
 
                 if (priceRange.TypeEstateCode == "001" && priceRange.ApartmentLayoutCode != null)
@@ -59,14 +65,20 @@ namespace Bcc.Pledg.Controllers
                 }
             }
 
-            if (allList.Count > 1) return StatusCode(406, "Вернул больше 1 диапазона");
+            var priceRequest=new LogData();
+
+            if (allList.Count > 1 && priceRange.TypeCode == '2' && priceRange.RCName != null) {
+                priceRequest = allList.OrderByDescending(r => r.MaxCostPerSQM).First();
+            }
+            else if (allList.Count > 1) return StatusCode(406, "Вернул больше 1 диапазона");
             else if (allList.Count == 0) return StatusCode(406, "По входящим параметрам нет диапазона");
 
-            var data = new { MinCostPerSQM = allList[0].MinCostPerSQM, MaxCostPerSQM = allList[0].MaxCostPerSQM };
+            var data = new { MinCostPerSQM = allList.OrderByDescending(r => r.MaxCostPerSQM).First().MinCostPerSQM, MaxCostPerSQM = allList.OrderByDescending(r => r.MaxCostPerSQM).First().MaxCostPerSQM };
 
-            var priceRequest = allList[0];
+            priceRequest = allList.OrderByDescending(r => r.MaxCostPerSQM).First();
             priceRequest.Action = "Strategy_"+priceRange.NameStrategy;
             priceRequest.Id = 0;
+            priceRequest.IsArch = '1';
 
             _context.LogData.Add(priceRequest);
 
